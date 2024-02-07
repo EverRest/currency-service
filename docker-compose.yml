@@ -1,0 +1,68 @@
+version: "3.8"
+services:
+
+  postgres:
+    container_name: currency-service-postgres
+    restart: on-failure
+    image: postgres:latest
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=laravel
+      - POSTGRES_PASSWORD=laravel
+      - POSTGRES_DB=laravel
+    ports:
+      - "5432:5432"
+    networks:
+      private_net:
+        ipv4_address: 172.28.1.2
+
+  webserver:
+    container_name: currency-service-webserver
+    restart: on-failure
+    image: nginx:alpine
+    working_dir: /application
+    volumes:
+      - ./application:/application
+      - ./sourcefiles/nginx:/etc/nginx/conf.d
+    ports:
+      - "80:80"
+    networks:
+      private_net:
+        ipv4_address: 172.28.1.3
+
+  php-fpm:
+    container_name: currency-service-php-fpm
+    restart: on-failure
+    build: sourcefiles/php-fpm
+    working_dir: /application
+    volumes:
+      - ./application:/application
+      - ./sourcefiles/php-fpm/php-ini-overrides.ini:/usr/local/etc/php/conf.d/99-overrides.ini
+    depends_on:
+      - postgres
+    networks:
+      private_net:
+        ipv4_address: 172.28.1.4
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    restart: on-failure
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - postgres
+    networks:
+      private_net:
+        ipv4_address: 172.28.1.5
+networks:
+  private_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
+volumes:
+  postgres-data:
