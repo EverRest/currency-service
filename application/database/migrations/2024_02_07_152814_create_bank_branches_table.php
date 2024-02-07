@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('bank_id');
             $table->foreign('bank_id')->references('id')->on('banks')->onDelete('cascade');
-            $table->string('address');
+            $table->string('address',255);
             $table->double('lat')->nullable();
             $table->double('lng')->nullable();
-            $table->string('phone_number')->nullable();
-            $table->string('department_name')->nullable();
+            $table->string('phone_number', 30)->nullable();
+            $table->string('department_name', 100)->nullable();
             $table->timestamps();
         });
     }

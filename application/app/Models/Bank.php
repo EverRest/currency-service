@@ -13,6 +13,14 @@ class Bank extends Model
      * @var string[] $fillable
      */
     protected $fillable = [
-        'name', 'description', 'logo', 'website', 'phone_number', 'email', 'legal_address', 'rating',
+        'name',
+        'code',
+        'description',
+        'logo',
+        'website',
+        'phone_number',
+        'email',
+        'address',
+        'rating',
     ];
 }
