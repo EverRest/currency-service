@@ -81,5 +81,3 @@
 
 20. **Regular Maintenance:**
 - Schedule routine maintenance tasks, including updates and bug fixes.
-
-This roadmap is a high-level overview, and you may need to break down tasks further based on your team's workflow and priorities. Adjustments can be made based on the specific requirements and feedback received during the development process.
