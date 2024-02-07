@@ -58,6 +58,7 @@ services:
     networks:
       private_net:
         ipv4_address: 172.28.1.5
+
 networks:
   private_net:
     ipam:
