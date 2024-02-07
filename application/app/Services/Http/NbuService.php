@@ -20,7 +20,7 @@ class NbuService
         $response = Http::get(self::NBU_URL);
         $json = $response->json();
         if (Arr::has($json, 'data')) {
-            $rates->merge(Arr::get($json, 'data', []));
+            $rates = Collection::make(Arr::get($json, 'data', []));
         }
 
         return $rates;

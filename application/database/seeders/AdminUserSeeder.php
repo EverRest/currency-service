@@ -22,6 +22,10 @@ class AdminUserSeeder extends Seeder
      */
     public function run()
     {
+        $adminEmail = Config::get('admin.email');
+        if ($this->userService->query()->where('email', $adminEmail)->exists()) {
+            return;
+        }
         $this->userService->firstOrCreate([
             'name' => Config::get('admin.name'),
             'email' => Config::get('admin.email'),

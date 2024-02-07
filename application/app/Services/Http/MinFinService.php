@@ -25,7 +25,7 @@ class MinFinService
         ])->get('{+endpoint}/{slug}');
         $json = $response->json();
         if (Arr::has($json, 'data')) {
-            $rates->merge(Arr::get($json, 'data', []));
+            $rates = Collection::make(Arr::get($json, 'data', []));
         }
 
         return $rates;
@@ -47,7 +47,7 @@ class MinFinService
         ]);
         $json = $response->json();
         if (Arr::has($json, 'list')) {
-            $list->merge(Arr::get($json, 'list', []));
+            $list = Collection::make(Arr::get($json, 'list', []));
         }
 
         return $list;

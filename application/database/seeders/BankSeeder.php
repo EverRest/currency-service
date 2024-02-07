@@ -33,17 +33,18 @@ class BankSeeder extends Seeder
         $banks->each(
             function ($bank) {
                 $bankCode = Arr::get($bank, 'slug');
-                if (Arr::has(Config::get(self::BANK_CONFIG), $bankCode)) {
+                if (in_array($bankCode, Config::get(self::BANK_CONFIG))) {
                     $this->bankService
                         ->firstOrCreate([
-                            'name' => Arr::get($bank, 'name'),
-                            'description' => Arr::get($bank, 'description'),
-                            'logo' => Arr::get($bank, 'logo'),
-                            'website' => Arr::get($bank, 'website'),
+                            'name' => Arr::get($bank, 'title'),
+                            'code' => $bankCode,
+                            'description' => Arr::get($bank, 'longTitle'),
+                            'logo' => Arr::get($bank, 'logo')[0],
+                            'website' => Arr::get($bank, 'site'),
                             'phone_number' => Arr::get($bank, 'phone'),
                             'email' => Arr::get($bank, 'email'),
-                            'address' => Arr::get($bank, 'legal_address'),
-                            'rating' => Arr::get($bank, 'rating'),
+                            'address' => Arr::get($bank, 'legalAddress'),
+                            'rating' => Arr::get($bank, 'ratingBank'),
                         ]);
                 }
             }

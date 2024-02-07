@@ -22,7 +22,7 @@ class FinanceUaService
         ]);
         $json = $response->json();
         if (Arr::has($json, 'responseData')) {
-            $list->merge(Arr::get($json, 'responseData', []));
+            $list = Collection::make(Arr::get($json, 'responseData', []));
         }
 
         return $list;
@@ -43,7 +43,7 @@ class FinanceUaService
         ]);
         $json = $response->json();
         if (Arr::has($json, 'data')) {
-            $list->merge(Arr::get($json, 'data', []));
+            $list = Collection::make(Arr::get($json, 'data', []));
         }
 
         return $list;
@@ -64,7 +64,7 @@ class FinanceUaService
         ]);
         $json = $response->json();
         if (Arr::has($json, 'data')) {
-            $list->merge(Arr::get($json, 'data', []));
+            $list = Collection::make(Arr::get($json, 'data', []));
         }
 
         return $list;
