@@ -1,5 +1,4 @@
-# Stack: Laravel 10, Nginx, Postgres, PHP-FPM, Docker
-# How to use it?
+# Set Up
 #### Run docker container
 ###### 
 ```
