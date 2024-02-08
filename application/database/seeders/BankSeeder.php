@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Services\Eloquent\BankBranchService;
 use App\Services\Eloquent\BankService;
 use App\Services\Http\FinanceUaService;
 use Illuminate\Database\Seeder;
@@ -15,9 +16,14 @@ class BankSeeder extends Seeder
 
     /**
      * @param BankService $bankService
+     * @param BankBranchService $bankBranchService
      * @param FinanceUaService $financeUaService
      */
-    public function __construct(private readonly BankService $bankService, private readonly FinanceUaService $financeUaService)
+    public function __construct(
+        private readonly BankService       $bankService,
+        private readonly BankBranchService $bankBranchService,
+        private readonly FinanceUaService  $financeUaService
+    )
     {
     }
 
@@ -34,7 +40,7 @@ class BankSeeder extends Seeder
             function ($bank) {
                 $bankCode = Arr::get($bank, 'slug');
                 if (in_array($bankCode, Config::get(self::BANK_CONFIG))) {
-                    $this->bankService
+                    $bank = $this->bankService
                         ->firstOrCreate([
                             'name' => Arr::get($bank, 'title'),
                             'code' => $bankCode,
@@ -46,6 +52,23 @@ class BankSeeder extends Seeder
                             'address' => Arr::get($bank, 'legalAddress'),
                             'rating' => Arr::get($bank, 'ratingBank'),
                         ]);
+                    $this->financeUaService->getBankBranchList($bankCode)->each(
+                        function ($bankBranch) use ($bank) {
+                            $branch = Arr::get($bankBranch, 'data.0');
+                            if (!empty($branch)) {
+                                $this->bankBranchService->firstOrCreate(
+                                    [
+                                        'bank_id' => $bank->id,
+                                        'department_name' => Arr::get($branch, 'branch_name'),
+                                        'address' => Arr::get($branch, 'address'),
+                                        'phone_number' => Arr::get($branch, 'phone'),
+                                        'lat' => Arr::get($branch, 'lat'),
+                                        'lng' => Arr::get($branch, 'lng'),
+                                    ]
+                                );
+                            }
+                        }
+                    );
                 }
             }
         );
