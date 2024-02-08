@@ -1,35 +1,34 @@
 <?php
-declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Jobs\StoreCurrencyRatesToDatabase;
+use App\Jobs\UpdateOrCreateBankBranches;
 use Illuminate\Console\Command;
 
-class StoreCurrencyRates extends Command
+class UpdateBankBranches extends Command
 {
-    private const SUCCESS_MESSAGE = 'Currency rates stored successfully';
+    private const SUCCESS_MESSAGE = 'Update bank branches';
 
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'app:store-currency-rates';
+    protected $signature = 'app:update-bank-branches';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Store CurrencyRates from MinFinService';
+    protected $description = 'Command description';
 
     /**
      * Execute the console command.
      */
     public function handle(): int
     {
-        StoreCurrencyRatesToDatabase::dispatch();
+        UpdateOrCreateBankBranches::dispatch();
         $this->info(self::SUCCESS_MESSAGE);
 
         return 1;

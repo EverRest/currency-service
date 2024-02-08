@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Services\Eloquent\BankBranchService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 
 class BankBranchController extends Controller
 {
@@ -25,6 +26,6 @@ class BankBranchController extends Controller
     {
         $response = $this->bankBranchService->list($request->all());
 
-        return response()->json(['data' => $response]);
+        return Response::data($response);
     }
 }

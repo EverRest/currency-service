@@ -14,7 +14,20 @@ class BankBranch extends Model
      * @var string[] $fillable
      */
     protected $fillable = [
-        'bank_id', 'address', 'lat', 'lng', 'phone_number', 'department_name',
+        'bank_id',
+        'address',
+        'lat',
+        'lng',
+        'phone_number',
+        'department_name',
+    ];
+
+    /**
+     * @var string[] $hidden
+     */
+    protected $hidden = [
+        'created_at',
+        'updated_at',
     ];
 
     public function bank()

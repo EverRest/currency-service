@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Services\Eloquent\CurrencyService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 
 class CurrencyController extends Controller
 {
@@ -25,6 +26,6 @@ class CurrencyController extends Controller
     {
         $response = $this->currencyService->list($request->all());
 
-        return response()->json(['data' => $response]);
+        return Response::data($response);
     }
 }

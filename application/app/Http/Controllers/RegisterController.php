@@ -8,6 +8,7 @@ use App\Services\Eloquent\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Response;
 
 class RegisterController extends Controller
 {
@@ -33,6 +34,9 @@ class RegisterController extends Controller
         ]);
         $token = $user->createToken('api-token')->plainTextToken;
 
-        return response()->json(['token' => $token, 'user' => $user]);
+        return Response::data([
+            'token' => $token,
+            'user' => $user,
+        ]);
     }
 }

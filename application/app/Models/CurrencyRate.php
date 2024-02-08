@@ -11,10 +11,21 @@ class CurrencyRate extends Model
 {
     use HasFactory;
 
+    /**
+     * @var string[] $fillable
+     */
     protected $fillable = [
         'bank_id',
         'currency_id',
         'rate',
+    ];
+
+    /**
+     * @var string[] $hidden
+     */
+    protected $hidden = [
+        'created_at',
+        'updated_at',
     ];
 
     /**

@@ -26,6 +26,14 @@ class Bank extends Model
     ];
 
     /**
+     * @var string[] $hidden
+     */
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
+    /**
      * @return HasMany
      */
     public function currencyRates(): HasMany

@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
@@ -26,8 +27,12 @@ class LoginController extends Controller
                 'email' => ['The provided credentials are incorrect.'],
             ]);
         }
+        $user = Auth::user();
 
-        return response()->json(['token' => auth()->user()->createToken('api-token')->plainTextToken]);
+        return Response::data([
+            'token' => $user->createToken('api-token')->plainTextToken,
+            'user' => $user,
+        ]);
     }
 }
 

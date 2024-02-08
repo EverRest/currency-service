@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 
 class LogoutController extends Controller
 {
+    private const MESSAGE = 'Successfully logged out';
     /**
      * @param Request $request
      *
@@ -17,6 +19,8 @@ class LogoutController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Successfully logged out']);
+        return Response::data([
+            'message' => self::MESSAGE
+        ]);
     }
 }

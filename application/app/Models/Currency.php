@@ -17,6 +17,14 @@ class Currency extends Model
     protected $fillable = ['code', 'name'];
 
     /**
+     * @var string[] $hidden
+     */
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
+    /**
      * @return HasMany
      */
     public function currencyRates(): HasMany

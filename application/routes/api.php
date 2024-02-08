@@ -42,4 +42,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::group(['prefix' => 'bank-branches', 'name' => 'bank-branches'], function () {
         Route::get('/', [BankBranchController::class, 'list'])->name('list');
     });
+    Route::group(['prefix' => 'currency-rates', 'name' => 'currencies'], function () {
+        Route::get('/', [CurrencyController::class, 'list'])->name('list');
+    });
 });
