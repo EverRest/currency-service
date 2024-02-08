@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\BankBranchController;
+use App\Http\Controllers\BankController;
+use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\RegisterController;
@@ -29,5 +32,14 @@ Route::name('auth.')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::group(['prefix' => 'users', 'name' => 'users'], function () {
         Route::put('/{user}', [UserController::class, 'update'])->name('update');
+    });
+    Route::group(['prefix' => 'banks', 'name' => 'banks'], function () {
+        Route::get('/', [BankController::class, 'list'])->name('list');
+    });
+    Route::group(['prefix' => 'currencies', 'name' => 'currencies'], function () {
+        Route::get('/', [CurrencyController::class, 'list'])->name('list');
+    });
+    Route::group(['prefix' => 'bank-branches', 'name' => 'bank-branches'], function () {
+        Route::get('/', [BankBranchController::class, 'list'])->name('list');
     });
 });

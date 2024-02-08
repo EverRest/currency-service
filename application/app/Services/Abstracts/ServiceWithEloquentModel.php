@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Contracts\Pagination\Paginator;
@@ -24,9 +25,9 @@ class ServiceWithEloquentModel
      *
      * @param array $data
      *
-     * @return Paginator
+     * @return Collection
      */
-    public function index(array $data = []): Paginator
+    public function list(array $data = []): Collection
     {
         $query = $this->search($data);
         $this->with($query);
@@ -47,7 +48,7 @@ class ServiceWithEloquentModel
             $query,
             Arr::only($data, [Config::get("pagination.sort_key"), Config::get("pagination.order_key")]),
         );
-        return $this->paginate($query, Arr::only($data, Config::get("pagination.limit_key")));
+        return $query->get();
     }
 
     /**
