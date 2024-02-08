@@ -5,7 +5,6 @@ namespace Database\Seeders;
 
 use App\Services\Eloquent\CurrencyService;
 use Illuminate\Database\Seeder;
-use App\Models\Currency;
 use Illuminate\Support\Facades\Config;
 
 class CurrencySeeder extends Seeder
@@ -15,7 +14,7 @@ class CurrencySeeder extends Seeder
     /**
      * @param CurrencyService $currencyService
      */
-    public function __construct(private CurrencyService $currencyService)
+    public function __construct(private readonly CurrencyService $currencyService)
     {
     }
 

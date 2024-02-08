@@ -12,4 +12,14 @@ class BankService extends ServiceWithEloquentModel
      * @var string $model
      */
     protected string $model = Bank::class;
+
+    /**
+     * @param int $externalId
+     *
+     * @return bool
+     */
+    public function existsByExternalId(int $externalId): bool
+    {
+        return $this->query()->where('external_id', $externalId)->exists();
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Database\Seeders;
@@ -28,6 +29,8 @@ class BankSeeder extends Seeder
     }
 
     /**
+     * Run the database seeds.
+     *
      * @return void
      */
     public function run()
@@ -35,45 +38,66 @@ class BankSeeder extends Seeder
         if ($this->bankService->count() > 0) {
             return;
         }
+
+        $this->seedBanks();
+    }
+
+    /**
+     * Seed banks and their branches.
+     *
+     * @return void
+     */
+    private function seedBanks(): void
+    {
         $banks = $this->financeUaService->getBankList();
+
         $banks->each(
             function ($bank) {
                 $bankCode = Arr::get($bank, 'slug');
-                if (in_array($bankCode, Config::get(self::BANK_CONFIG))) {
-                    if ($this->bankService->query()->where('external_id', Arr::get($bank, 'id'))->exists()) {
-                        return;
-                    }
-                    $bankModel = $this->bankService
-                        ->firstOrCreate([
-                            'name' => Arr::get($bank, 'title'),
-                            'code' => $bankCode,
-                            'external_id' => Arr::get($bank, 'id'),
-                            'description' => Arr::get($bank, 'longTitle'),
-                            'logo' => Arr::get($bank, 'logo')[0],
-                            'website' => Arr::get($bank, 'site'),
-                            'phone_number' => Arr::get($bank, 'phone'),
-                            'email' => Arr::get($bank, 'email'),
-                            'address' => Arr::get($bank, 'legalAddress'),
-                            'rating' => Arr::get($bank, 'ratingBank'),
-                        ]);
-                    $this->financeUaService->getBankBranchList($bankCode)->each(
-                        function ($bankBranch) use ($bankModel) {
-                            $branch = Arr::get($bankBranch, 'data.0');
-                            if (!empty($branch)) {
-                                $this->bankBranchService->firstOrCreate(
-                                    [
-                                        'bank_id' => $bankModel->id,
-                                        'external_id' => Arr::get($bankBranch, 'id'),
-                                        'department_name' => Arr::get($branch, 'branch_name'),
-                                        'address' => Arr::get($branch, 'address'),
-                                        'phone_number' => Arr::get($branch, 'phone'),
-                                        'lat' => Arr::get($branch, 'lat'),
-                                        'lng' => Arr::get($branch, 'lng'),
-                                    ]
-                                );
-                            }
-                        }
-                    );
+
+                if (in_array($bankCode, Config::get(self::BANK_CONFIG)) && !$this->bankService->existsByExternalId(Arr::get($bank, 'id'))) {
+                    $this->seedBank($bank, $bankCode);
+                }
+            }
+        );
+    }
+
+    /**
+     * Seed a bank and its branches.
+     *
+     * @param array $bank
+     * @param string $bankCode
+     * @return void
+     */
+    private function seedBank(array $bank, string $bankCode): void
+    {
+        $bankModel = $this->bankService->firstOrCreate([
+            'name' => Arr::get($bank, 'title'),
+            'code' => $bankCode,
+            'external_id' => Arr::get($bank, 'id'),
+            'description' => Arr::get($bank, 'longTitle'),
+            'logo' => Arr::get($bank, 'logo')[0],
+            'website' => Arr::get($bank, 'site'),
+            'phone_number' => Arr::get($bank, 'phone'),
+            'email' => Arr::get($bank, 'email'),
+            'address' => Arr::get($bank, 'legalAddress'),
+            'rating' => Arr::get($bank, 'ratingBank'),
+        ]);
+
+        $this->financeUaService->getBankBranchList($bankCode)->each(
+            function ($bankBranch) use ($bankModel) {
+                $branch = Arr::get($bankBranch, 'data.0');
+
+                if (!empty($branch)) {
+                    $this->bankBranchService->firstOrCreate([
+                        'bank_id' => $bankModel->id,
+                        'external_id' => Arr::get($bankBranch, 'id'),
+                        'department_name' => Arr::get($branch, 'branch_name'),
+                        'address' => Arr::get($branch, 'address'),
+                        'phone_number' => Arr::get($branch, 'phone'),
+                        'lat' => Arr::get($branch, 'lat'),
+                        'lng' => Arr::get($branch, 'lng'),
+                    ]);
                 }
             }
         );

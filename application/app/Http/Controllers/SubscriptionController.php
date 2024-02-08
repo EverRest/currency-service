@@ -40,7 +40,7 @@ class SubscriptionController extends Controller
      */
     public function store(Store $request): JsonResponse
     {
-        $response = $this->subscriptionService->store($request->all());
+        $response = $this->subscriptionService->firstOrCreate($request->validated());
 
         return Response::data($response);
     }

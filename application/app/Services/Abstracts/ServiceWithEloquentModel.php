@@ -6,22 +6,19 @@ namespace App\Services\Abstracts;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Support\Facades\App;
 use Throwable;
 
 class ServiceWithEloquentModel
 {
-    /**
-     * @var string
-     */
     protected string $model;
 
     /**
-     * Get a list of models
+     * Get a list of models.
      *
      * @param array $data
      *
@@ -31,40 +28,56 @@ class ServiceWithEloquentModel
     {
         $query = $this->search($data);
         $this->with($query);
-        $this->filter(
-            $query,
-            Arr::except(
-                $data,
-                [
-                    Config::get('pagination.search_key'),
-                    Config::get('pagination.sort_key'),
-                    Config::get('pagination.order_key'),
-                    Config::get('pagination.limit_key'),
-                    Config::get('pagination.page_key')
-                ]
-            )
-        );
-        $this->sort(
-            $query,
-            Arr::only($data, [Config::get("pagination.sort_key"), Config::get("pagination.order_key")]),
-        );
+        $this->filter($query, Arr::except($data, $this->getPaginationKeys()));
+        $this->sort($query, Arr::only($data, [$this->getSortKey(), $this->getOrderKey()]));
         return $query->get();
     }
 
     /**
+     * Get the pagination keys from Config.
+     *
+     * @return array
+     */
+    protected function getPaginationKeys(): array
+    {
+        return [
+            Config::get('pagination'),
+        ];
+    }
+
+    /**
+     * Get the sort key from Config.
+     *
+     * @return string
+     */
+    protected function getSortKey(): string
+    {
+        return Config::get('pagination.sort_key');
+    }
+
+    /**
+     * Get the order key from Config.
+     *
+     * @return string
+     */
+    protected function getOrderKey(): string
+    {
+        return Config::get('pagination.order_key');
+    }
+
+    /**
+     * Get a new query builder instance for the model.
+     *
      * @return Builder
      */
     public function query(): Builder
     {
-        /**
-         * @var Model $model
-         */
-        $model = App::make($this->model);
-
-        return $model::query();
+        return App::make($this->model)::query();
     }
 
     /**
+     * Apply search conditions to the query.
+     *
      * @param array $data
      *
      * @return Builder
@@ -75,19 +88,21 @@ class ServiceWithEloquentModel
     }
 
     /**
-     * @param $query
+     * Apply filters to the query.
+     *
+     * @param mixed $query
      * @param array $filter
      *
      * @return Builder
      */
-    protected function filter($query, array $filter): Builder
+    protected function filter(mixed $query, array $filter): Builder
     {
-        $query->when($filter, fn($query) => $this->applyFilter($query, $filter));
-
-        return $query;
+        return $query->when($filter, fn ($query) => $this->applyFilter($query, $filter));
     }
 
     /**
+     * Apply a filter to the query.
+     *
      * @param mixed $query
      * @param array $filter
      *
@@ -100,46 +115,45 @@ class ServiceWithEloquentModel
                 continue;
             }
 
-            if (is_array($filterValue)) {
-                $query->whereIn($filterKey, $filterValue);
-            } else {
-                $query->where($filterKey, $filterValue);
-            }
+            $query->when(is_array($filterValue), fn ($query) => $query->whereIn($filterKey, $filterValue))
+                ->when(!is_array($filterValue), fn ($query) => $query->where($filterKey, $filterValue));
         }
 
         return $query;
     }
 
     /**
-     * @param $query
+     * Paginate the given query.
+     *
+     * @param mixed $query
      * @param array $data
      *
      * @return Paginator
      */
-    protected function paginate($query, array $data): Paginator
+    protected function paginate(mixed $query, array $data): Paginator
     {
-        $limit = Arr::get($data, Config::get('pagination.limit_key')) ?: Config::get('pagination.limit_per_page');
+        $limit = Arr::get($data, Config::get('pagination.limit_key'), Config::get('pagination.limit_per_page'));
         return $query->paginate($limit);
     }
 
     /**
-     * @param $query
+     * Apply sorting to the query.
+     *
+     * @param mixed $query
      * @param array $data
      *
      * @return Builder
      */
-    protected function sort($query, array $data): Builder
+    protected function sort(mixed $query, array $data): Builder
     {
         $sort = $this->getSortColumn($data);
         $order = $this->getDirectionColumn($data);
-        $query->when($sort, function ($query) use ($sort, $order) {
-            return $query->orderBy($sort, $order);
-        });
-
-        return $query;
+        return $query->when($sort, fn ($query) => $query->orderBy($sort, $order));
     }
 
     /**
+     * Get the sort column from the data.
+     *
      * @param array $data
      *
      * @return string
@@ -150,6 +164,8 @@ class ServiceWithEloquentModel
     }
 
     /**
+     * Get the direction column from the data.
+     *
      * @param array $data
      *
      * @return string
@@ -160,16 +176,20 @@ class ServiceWithEloquentModel
     }
 
     /**
-     * @param $query
+     * Apply eager loading to the query.
+     *
+     * @param mixed $query
      *
      * @return Builder
      */
-    protected function with($query): Builder
+    protected function with(mixed $query): Builder
     {
         return $query;
     }
 
     /**
+     * Get a new model instance.
+     *
      * @return Model
      */
     protected function model(): Model
@@ -178,6 +198,8 @@ class ServiceWithEloquentModel
     }
 
     /**
+     * Get the count of records in the query.
+     *
      * @return int
      */
     public function count(): int
@@ -186,6 +208,8 @@ class ServiceWithEloquentModel
     }
 
     /**
+     * Store a new record in the database.
+     *
      * @param array $data
      *
      * @return Model
@@ -196,6 +220,8 @@ class ServiceWithEloquentModel
     }
 
     /**
+     * Create or update a record matching the attributes, and fill it with values.
+     *
      * @param array $data
      *
      * @return Model
@@ -206,7 +232,7 @@ class ServiceWithEloquentModel
     }
 
     /**
-     * Update and refresh model
+     * Update and refresh the given model.
      *
      * @param Model $model
      * @param array $data
@@ -220,11 +246,11 @@ class ServiceWithEloquentModel
     }
 
     /**
-     * Patch and refresh model
+     * Patch and refresh the given model.
      *
      * @param Model $model
      * @param string $fieldName
-     * @param array $data
+     * @param mixed $data
      *
      * @return Model
      */
@@ -234,6 +260,8 @@ class ServiceWithEloquentModel
     }
 
     /**
+     * Update or throw an exception if it fails.
+     *
      * @param Model $model
      * @param array $data
      *
@@ -247,6 +275,8 @@ class ServiceWithEloquentModel
     }
 
     /**
+     * Find a model by its primary key or throw an exception.
+     *
      * @param int $id
      *
      * @return Model
@@ -257,14 +287,23 @@ class ServiceWithEloquentModel
     }
 
     /**
+     * Destroy all records in the query.
+     *
      * @return void
      */
     public function destroyAll(): void
     {
-        in_array(SoftDeletes::class, class_uses($this->query()->getModel()), true) ?
-            $this->model::all()->each(fn(Model $model) => $model->delete()) :
-            $this->model::truncate();
+        $modelQuery = $this->query();
+
+        $modelQuery->when(
+            in_array(SoftDeletes::class, class_uses($modelQuery->getModel()), true),
+            fn ($query) => $query->each(fn (Model $model) => $model->delete())
+        )->unless(
+            in_array(SoftDeletes::class, class_uses($modelQuery->getModel()), true),
+            fn ($query) => $query->truncate()
+        );
     }
+
     /**
      * Delete the model from the database within a transaction.
      *
@@ -276,11 +315,7 @@ class ServiceWithEloquentModel
      */
     public function destroy(Model $model, bool $force = false): Model
     {
-        if ($force) {
-            $model->forceDelete();
-        } else {
-            $model->deleteOrFail();
-        }
+        $force ? $model->forceDelete() : $model->deleteOrFail();
         return $model;
     }
 }

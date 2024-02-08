@@ -3,24 +3,36 @@ declare(strict_types=1);
 
 namespace App\Listeners;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
+use App\Events\CurrencyRateChanged;
+use App\Services\Eloquent\CurrencyRateService;
+use App\Services\Eloquent\UserService;
 
 class CriticalRateChanged
 {
     /**
-     * Create the event listener.
+     * @param CurrencyRateService $currencyRateService
+     * @param UserService $userService
      */
-    public function __construct()
+    public function __construct(
+        private readonly CurrencyRateService $currencyRateService,
+        private readonly UserService         $userService,
+    )
     {
-        //
     }
 
     /**
-     * Handle the event.
+     * @param CurrencyRateChanged $event
+     *
+     * @return void
      */
-    public function handle(object $event): void
+    public function handle(CurrencyRateChanged $event): void
     {
-        //
+        $notifiers = $this->userService->getUsersWithEnabledAlert();
+        $newCurrencyRate = $event->currencyRate;
+        if ($this->currencyRateService->checkForCriticalChange($newCurrencyRate)) {
+            $previousCurrencyRate = $this->currencyRateService->getPreviousCurrencyRate($newCurrencyRate);
+            $this->currencyRateService->notifyCriticalRateChange($notifiers, $previousCurrencyRate, $newCurrencyRate);
+
+        }
     }
 }
