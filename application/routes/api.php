@@ -3,6 +3,7 @@
 use App\Http\Controllers\BankBranchController;
 use App\Http\Controllers\BankController;
 use App\Http\Controllers\CurrencyController;
+use App\Http\Controllers\CurrencyRateController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\RegisterController;
@@ -47,8 +48,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [BankBranchController::class, 'list'])->name('list');
         Route::get('/closest', [BankBranchController::class, 'getClosestBanks'])->name('closest-bank-branches');
     });
-    Route::group(['prefix' => 'currency-rates', 'name' => 'currencies'], function () {
-        Route::get('/', [CurrencyController::class, 'list'])->name('list');
+    Route::group(['prefix' => 'currency-rates', 'name' => 'currency-rates'], function () {
+        Route::get('/', [CurrencyRateController::class, 'list'])->name('list');
     });
     Route::group(['prefix' => 'subscriptions', 'name' => 'subscriptions'], function () {
         Route::get('/', [SubscriptionController::class, 'list'])->name('list');
