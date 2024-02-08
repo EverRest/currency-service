@@ -4,8 +4,10 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Events\CurrencyRateChanged;
-use App\Listeners\SubscriptionCheck;
+use App\Listeners\CriticalRateChanged;
+use App\Listeners\SubscriptionRateChanged;
 use App\Models\CurrencyRate;
+use App\Notifications\CriticalRateChangedNotification;
 use App\Observers\CurrencyRateObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -23,12 +25,13 @@ class EventServiceProvider extends ServiceProvider
             SendEmailVerificationNotification::class,
         ],
         CurrencyRateChanged::class => [
-            SubscriptionCheck::class,
+            SubscriptionRateChanged::class,
+            CriticalRateChanged::class,
         ],
     ];
 
     /**
-     * Register any events for your application.
+     * @return void
      */
     public function boot(): void
     {
@@ -36,7 +39,7 @@ class EventServiceProvider extends ServiceProvider
     }
 
     /**
-     * Determine if events and listeners should be automatically discovered.
+     * @return bool
      */
     public function shouldDiscoverEvents(): bool
     {

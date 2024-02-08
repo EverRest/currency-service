@@ -3,15 +3,18 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
+use App\Events\CurrencyRateChanged;
 use App\Models\CurrencyRate;
 
 class CurrencyRateObserver
 {
     /**
-     * Handle the CurrencyRate "created" event.
+     * @param CurrencyRate $currencyRate
+     *
+     * @return void
      */
     public function created(CurrencyRate $currencyRate): void
     {
-        // ...
+        CurrencyRateChanged::dispatch($currencyRate);
     }
 }

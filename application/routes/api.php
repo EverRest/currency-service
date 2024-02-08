@@ -6,6 +6,7 @@ use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,8 @@ Route::name('auth.')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::group(['prefix' => 'users', 'name' => 'users'], function () {
         Route::put('/{user}', [UserController::class, 'update'])->name('update');
+        Route::patch('/{user}', [UserController::class, 'toggleCriticalRateChangeAlert'])
+            ->name('toggle-critical-rate-change-alert');
     });
     Route::group(['prefix' => 'banks', 'name' => 'banks'], function () {
         Route::get('/', [BankController::class, 'list'])->name('list');
@@ -44,5 +47,10 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::group(['prefix' => 'currency-rates', 'name' => 'currencies'], function () {
         Route::get('/', [CurrencyController::class, 'list'])->name('list');
+    });
+    Route::group(['prefix' => 'subscriptions', 'name' => 'subscriptions'], function () {
+        Route::get('/', [SubscriptionController::class, 'list'])->name('list');
+        Route::post('/', [SubscriptionController::class, 'store'])->name('store');
+        Route::delete('/{subscription}', [SubscriptionController::class, 'destroy'])->name('destroy');
     });
 });

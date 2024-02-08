@@ -39,6 +39,8 @@ class CurrencyRate extends Model
         'date' => 'timestamp',
         'created_at' => 'timestamp',
         'updated_at' => 'timestamp',
+        'bid' => 'float',
+        'ask' => 'float',
     ];
 
     /**

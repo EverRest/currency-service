@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_alert_enabled',
     ];
 
     /**
@@ -43,6 +44,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'is_alert_enabled' => 'boolean',
         'created_at' => 'timestamp',
         'updated_at' => 'timestamp',
     ];

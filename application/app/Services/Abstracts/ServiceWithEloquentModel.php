@@ -204,6 +204,7 @@ class ServiceWithEloquentModel
     {
         return $this->model::firstOrCreate($data);
     }
+
     /**
      * Update and refresh model
      *
@@ -216,6 +217,20 @@ class ServiceWithEloquentModel
     {
         $model->fill($data)->save();
         return $model->refresh();
+    }
+
+    /**
+     * Patch and refresh model
+     *
+     * @param Model $model
+     * @param string $fieldName
+     * @param array $data
+     *
+     * @return Model
+     */
+    public function patch(Model $model, string $fieldName, mixed $data): Model
+    {
+        return $this->update($model, [$fieldName => $data]);
     }
 
     /**
