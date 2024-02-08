@@ -28,4 +28,11 @@ class BankBranchController extends Controller
 
         return Response::data($response);
     }
+
+    public function getClosestBanks(): JsonResponse
+    {
+        $response = $this->bankBranchService->getClosestBanks();
+
+        return Response::data($response);
+    }
 }

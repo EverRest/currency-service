@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\Bank;
 use App\Services\Eloquent\BankService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -27,5 +28,15 @@ class BankController extends Controller
         $response = $this->bankService->list($request->all());
 
         return Response::data($response);
+    }
+
+    /**
+     * @param Bank $bank
+     *
+     * @return JsonResponse
+     */
+    public function item(Bank $bank): JsonResponse
+    {
+        return Response::data($bank);
     }
 }

@@ -38,12 +38,14 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::group(['prefix' => 'banks', 'name' => 'banks'], function () {
         Route::get('/', [BankController::class, 'list'])->name('list');
+        Route::get('/{bank}', [BankController::class, 'item'])->name('item');
     });
     Route::group(['prefix' => 'currencies', 'name' => 'currencies'], function () {
         Route::get('/', [CurrencyController::class, 'list'])->name('list');
     });
     Route::group(['prefix' => 'bank-branches', 'name' => 'bank-branches'], function () {
         Route::get('/', [BankBranchController::class, 'list'])->name('list');
+        Route::get('/closest', [BankBranchController::class, 'getClosestBanks'])->name('closest-bank-branches');
     });
     Route::group(['prefix' => 'currency-rates', 'name' => 'currencies'], function () {
         Route::get('/', [CurrencyController::class, 'list'])->name('list');
