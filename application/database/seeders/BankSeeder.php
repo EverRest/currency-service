@@ -40,10 +40,14 @@ class BankSeeder extends Seeder
             function ($bank) {
                 $bankCode = Arr::get($bank, 'slug');
                 if (in_array($bankCode, Config::get(self::BANK_CONFIG))) {
-                    $bank = $this->bankService
+                    if ($this->bankService->query()->where('external_id', Arr::get($bank, 'id'))->exists()) {
+                        return;
+                    }
+                    $bankModel = $this->bankService
                         ->firstOrCreate([
                             'name' => Arr::get($bank, 'title'),
                             'code' => $bankCode,
+                            'external_id' => Arr::get($bank, 'id'),
                             'description' => Arr::get($bank, 'longTitle'),
                             'logo' => Arr::get($bank, 'logo')[0],
                             'website' => Arr::get($bank, 'site'),
@@ -53,12 +57,13 @@ class BankSeeder extends Seeder
                             'rating' => Arr::get($bank, 'ratingBank'),
                         ]);
                     $this->financeUaService->getBankBranchList($bankCode)->each(
-                        function ($bankBranch) use ($bank) {
+                        function ($bankBranch) use ($bankModel) {
                             $branch = Arr::get($bankBranch, 'data.0');
                             if (!empty($branch)) {
                                 $this->bankBranchService->firstOrCreate(
                                     [
-                                        'bank_id' => $bank->id,
+                                        'bank_id' => $bankModel->id,
+                                        'external_id' => Arr::get($bankBranch, 'id'),
                                         'department_name' => Arr::get($branch, 'branch_name'),
                                         'address' => Arr::get($branch, 'address'),
                                         'phone_number' => Arr::get($branch, 'phone'),

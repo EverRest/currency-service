@@ -17,7 +17,9 @@ class CurrencyRate extends Model
     protected $fillable = [
         'bank_id',
         'currency_id',
-        'rate',
+        'bid',
+        'ask',
+        'date',
     ];
 
     /**
@@ -26,6 +28,17 @@ class CurrencyRate extends Model
     protected $hidden = [
         'created_at',
         'updated_at',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'date' => 'timestamp',
+        'created_at' => 'timestamp',
+        'updated_at' => 'timestamp',
     ];
 
     /**

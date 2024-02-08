@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('banks', function (Blueprint $table) {
             $table->id();
+            $table->string('external_id', 255)->nullable()->unique();
             $table->string('name', 100);
             $table->string('code', 20)->unique();
             $table->text('description')->nullable();

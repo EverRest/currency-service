@@ -14,7 +14,7 @@ use Illuminate\Validation\ValidationException;
 class LoginController extends Controller
 {
     /**
-     * @param Request $request
+     * @param Login $request
      *
      * @return JsonResponse
      * @throws ValidationException

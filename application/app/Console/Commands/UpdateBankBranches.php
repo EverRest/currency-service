@@ -1,8 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Jobs\UpdateOrCreateBankBranches;
+use App\Jobs\UpdateOrCreateBankBranchesJob;
 use Illuminate\Console\Command;
 
 class UpdateBankBranches extends Command
@@ -28,7 +29,7 @@ class UpdateBankBranches extends Command
      */
     public function handle(): int
     {
-        UpdateOrCreateBankBranches::dispatch();
+        UpdateOrCreateBankBranchesJob::dispatch();
         $this->info(self::SUCCESS_MESSAGE);
 
         return 1;

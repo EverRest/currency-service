@@ -4,6 +4,7 @@ return [
     'privatbank',
     'oschadbank',
     'ukreximbank',
-    'raiffeisen-bank-aval',
+    'monobank',
     'ukrgasbank',
+    'nbu',
 ];

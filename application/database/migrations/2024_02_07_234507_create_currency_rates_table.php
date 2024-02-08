@@ -14,9 +14,11 @@ return new class extends Migration {
             $table->id();
             $table->unsignedBigInteger('bank_id');
             $table->unsignedBigInteger('currency_id');
-            $table->decimal('rate', 10, 4);
+            $table->decimal('bid', 10, 4);
+            $table->decimal('ask', 10, 4);
             $table->foreign('bank_id')->references('id')->on('banks')->onDelete('cascade');
             $table->foreign('currency_id')->references('id')->on('currencies')->onDelete('cascade');
+            $table->timestamp('date')->index();
             $table->timestamps();
         });
     }

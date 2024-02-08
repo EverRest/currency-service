@@ -28,7 +28,7 @@ class CurrencySeeder extends Seeder
             $this->currencyService
                 ->firstOrCreate([
                     'name' => $name,
-                    'code' => $code
+                    'code' => $code,
                 ]);
         }
     }

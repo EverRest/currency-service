@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('bank_branches', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('bank_id');
+            $table->string('external_id', 255)->nullable()->index();
             $table->foreign('bank_id')->references('id')->on('banks')->onDelete('cascade');
             $table->string('address',255);
-            $table->double('lat')->nullable();
-            $table->double('lng')->nullable();
+            $table->double('lat')->nullable()->index();
+            $table->double('lng')->nullable()->index();
             $table->string('phone_number', 100)->nullable();
             $table->string('department_name', 255)->nullable();
             $table->timestamps();
