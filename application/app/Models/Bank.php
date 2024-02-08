@@ -2,13 +2,14 @@
 declare(strict_types=1);
 namespace App\Models;
 
+use App\Traits\HasCurrencyRatesRelation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Bank extends Model
 {
     use HasFactory;
+    use HasCurrencyRatesRelation;
 
     /**
      * @var string[] $fillable
@@ -32,12 +33,4 @@ class Bank extends Model
         'created_at',
         'updated_at',
     ];
-
-    /**
-     * @return HasMany
-     */
-    public function currencyRates(): HasMany
-    {
-        return $this->hasMany(CurrencyRate::class);
-    }
 }

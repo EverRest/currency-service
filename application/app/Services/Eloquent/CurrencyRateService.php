@@ -25,6 +25,7 @@ class CurrencyRateService extends ServiceWithEloquentModel
      * Check if the rate change is critical.
      *
      * @param CurrencyRate $newCurrencyRate
+     *
      * @return bool
      */
     public function checkForCriticalChange(CurrencyRate $newCurrencyRate): bool
@@ -42,6 +43,8 @@ class CurrencyRateService extends ServiceWithEloquentModel
 
     /**
      * @param Collection $notifiers
+     * @param $previousCurrencyRate
+     * @param $newCurrencyRate
      *
      * @return void
      */
