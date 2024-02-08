@@ -6,7 +6,6 @@ namespace App\Jobs;
 use App\Services\Eloquent\BankService;
 use App\Services\Eloquent\CurrencyRateService;
 use App\Services\Eloquent\CurrencyService;
-use App\Services\Http\FinanceUaService;
 use App\Services\Http\MinFinService;
 use App\Services\Http\NbuService;
 use Illuminate\Bus\Queueable;

@@ -16,13 +16,8 @@ class NbuService
      */
     public function getExchangeRates(): Collection
     {
-        $rates = Collection::make();
         $response = Http::get(self::NBU_URL);
-        $json = $response->json();
-        if (Arr::has($json, 'data')) {
-            $rates = Collection::make(Arr::get($json, 'data', []));
-        }
 
-        return $rates;
+        return Collection::make($response->json());
     }
 }
