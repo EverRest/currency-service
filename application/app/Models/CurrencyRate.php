@@ -7,6 +7,7 @@ use App\Traits\HasBankRelation;
 use App\Traits\HasCurrencyRelation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CurrencyRate extends Model
 {
@@ -45,4 +46,12 @@ class CurrencyRate extends Model
         'bid' => 'float',
         'ask' => 'float',
     ];
+
+    /**
+     * @return HasMany
+     */
+    public function criticalRateChangeHistories(): HasMany
+    {
+        return $this->hasMany(CriticalRateChangeHistory::class, 'previous_currency_rate_id');
+    }
 }
