@@ -32,21 +32,9 @@ class StoreCurrentRates extends Command
     /**
      * Execute the console command.
      */
-    public function handle(
-        BankService         $bankService,
-        CurrencyService     $currencyService,
-        CurrencyRateService $currencyRateService,
-        MinFinService       $minFinService,
-        NbuService          $nbuService
-    ): int
+    public function handle(): int
     {
-        StoreCurrentRatesJob::dispatch(
-            $bankService,
-            $currencyService,
-            $currencyRateService,
-            $minFinService,
-            $nbuService,
-        );
+        StoreCurrentRatesJob::dispatch();
         $this->info(self::SUCCESS_MESSAGE);
 
         return 1;

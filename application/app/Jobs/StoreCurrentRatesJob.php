@@ -25,30 +25,34 @@ class StoreCurrentRatesJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * Create a new job instance.
+     * @param BankService $bankService
+     * @param CurrencyService $currencyService
+     * @param CurrencyRateService $currencyRateService
+     * @param MinFinService $minFinService
+     * @param NbuService $nbuService
      *
      * @return void
      */
-    public function __construct(
-        private readonly BankService         $bankService,
-        private readonly CurrencyService     $currencyService,
-        private readonly CurrencyRateService $currencyRateService,
-        private readonly MinFinService       $minFinService,
-        private readonly NbuService          $nbuService
-    )
+    public function handle(
+        BankService         $bankService,
+        CurrencyService     $currencyService,
+        CurrencyRateService $currencyRateService,
+        MinFinService       $minFinService,
+        NbuService          $nbuService
+    ): void
     {
-    }
-
-    /**
-     * @return void
-     */
-    public function handle(): void
-    {
-        $banks = $this->bankService->list();
+        $banks = $bankService->list();
         $bankCodes = $banks->pluck('code')->toArray();
-        $this->currencyService->query()
+        $currencyService->query()
             ->each(
-                fn($currency) => $this->storeCurrencyRates($currency, $banks, $bankCodes)
+                fn($currency) => $this->storeCurrencyRates(
+                    $currency,
+                    $banks,
+                    $bankCodes,
+                    $currencyRateService,
+                    $minFinService,
+                    $nbuService
+                )
             );
     }
 
@@ -56,27 +60,80 @@ class StoreCurrentRatesJob implements ShouldQueue
      * @param Currency $currency
      * @param Collection $banks
      * @param array $bankCodes
+     * @param CurrencyRateService $currencyRateService
+     * @param MinFinService $minFinService
+     * @param NbuService $nbuService
      *
      * @return void
      */
-    private function storeCurrencyRates(Currency $currency, Collection $banks, array $bankCodes): void
-    {
-        $allCurrentCurrencyRates = $this->minFinService
-            ->getAllExchangeRates($currency->code);
+    private function storeCurrencyRates(
+        Currency $currency,
+        Collection $banks,
+        array $bankCodes,
+        CurrencyRateService $currencyRateService,
+        MinFinService $minFinService,
+        NbuService $nbuService
+    ): void {
+        $allCurrentCurrencyRates = $minFinService->getAllExchangeRates($currency->code);
         $nbuBank = $banks->firstWhere('code', 'nbu');
         $desiredBankCodes = Config::get('banks');
+        $this->storeRatesForBanks(
+            $currency,
+            $allCurrentCurrencyRates,
+            $desiredBankCodes,
+            $banks,
+            $nbuBank,
+            $currencyRateService,
+        );
+        $this->storeNbuRates($currency,$nbuBank, $nbuService, $currencyRateService);
+    }
+
+    /**
+     * @param Currency $currency
+     * @param Collection $allCurrentCurrencyRates
+     * @param array $desiredBankCodes
+     * @param Collection $banks
+     * @param Bank $nbuBank
+     * @param CurrencyRateService $currencyRateService
+     *
+     * @return void
+     */
+    private function storeRatesForBanks(
+        Currency $currency,
+        Collection $allCurrentCurrencyRates,
+        array $desiredBankCodes,
+        Collection $banks,
+        Bank $nbuBank,
+        CurrencyRateService $currencyRateService
+    ): void {
         $allCurrentCurrencyRates->each(
-            function ($rate) use ($currency, $banks, $bankCodes, $nbuBank, $desiredBankCodes) {
+            function ($rate) use ($currency, $banks, $desiredBankCodes, $nbuBank, $currencyRateService) {
                 $bankCode = Arr::get($rate, 'slug');
                 if (in_array($bankCode, $desiredBankCodes, true)) {
-                    $rateExists = $this->rateExists($currency, $rate, $bankCode, $banks, $nbuBank);
+                    $rateExists = $this->rateExists($currency, $rate, $bankCode, $banks, $nbuBank, $currencyRateService);
                     if (!$rateExists) {
-                        $this->storeCurrencyRate($currency, $rate, $bankCode, $banks, $nbuBank);
+                        $this->storeCurrencyRate($currency, $rate, $bankCode, $banks, $nbuBank, $currencyRateService);
                     }
                 }
             }
         );
     }
+
+    private function storeNbuRates(
+        Currency $currency,
+        Bank $nbuBank,
+        NbuService $nbuService,
+        CurrencyRateService $currencyRateService
+    ): void {
+        $nbuRates = $nbuService->getExchangeRates();
+        foreach ($nbuRates as $nbuRate) {
+            $rateExists = $this->rateExists($currency, ['cash' => $nbuRate], 'nbu', collect(), $nbuBank, $currencyRateService);
+            if (!$rateExists) {
+                $this->storeCurrencyRate($currency, ['cash' => $nbuRate], 'nbu', collect(), $nbuBank, $currencyRateService);
+            }
+        }
+    }
+
 
     /**
      * Check if the rate exists.
@@ -86,6 +143,7 @@ class StoreCurrentRatesJob implements ShouldQueue
      * @param string $bankCode
      * @param Collection $banks
      * @param Bank $nbuBank
+     * @param CurrencyRateService $currencyRateService
      *
      * @return bool
      */
@@ -94,11 +152,13 @@ class StoreCurrentRatesJob implements ShouldQueue
         array      $rate,
         string     $bankCode,
         Collection $banks,
-        Bank       $nbuBank): bool
+        Bank       $nbuBank,
+        CurrencyRateService $currencyRateService,
+    ): bool
     {
-        return $this->currencyRateService->query()
+        return $currencyRateService->query()
             ->where('currency_id', $currency->id)
-            ->where('date', Carbon::parse(Arr::get($rate, 'card.date')))
+            ->where('date', Carbon::parse(Arr::has($rate, 'cash.date')? Arr::get($rate, 'cash.date') : Arr::get($rate, 'card.date')))
             ->when($bankCode !== 'nbu', fn($query) => $query->where('bank_id', $banks->firstWhere('code', $bankCode)?->id))
             ->when($bankCode === 'nbu', fn($query) => $query->where('bank_id', $nbuBank?->id))
             ->exists();
@@ -108,8 +168,9 @@ class StoreCurrentRatesJob implements ShouldQueue
      * @param Currency $currency
      * @param array $rate
      * @param string $bankCode
-     * @param array $banks
+     * @param Collection $banks
      * @param Bank $nbuBank
+     * @param CurrencyRateService $currencyRateService
      *
      * @return void
      */
@@ -118,7 +179,8 @@ class StoreCurrentRatesJob implements ShouldQueue
         array    $rate,
         string   $bankCode,
         Collection    $banks,
-        Bank     $nbuBank
+        Bank     $nbuBank,
+        CurrencyRateService $currencyRateService,
     ): void
     {
         $cashData = Arr::get($rate, 'cash');
@@ -144,7 +206,7 @@ class StoreCurrentRatesJob implements ShouldQueue
             $currencyRateData['date'] = Carbon::parse(Arr::get($cardData, 'date'));
         }
         if ($currencyRateData['bid'] !== null && $currencyRateData['ask'] !== null && $currencyRateData['date'] !== null) {
-            $this->currencyRateService->store($currencyRateData);
+            $currencyRateService->store($currencyRateData);
         }
     }
 
