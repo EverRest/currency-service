@@ -27,7 +27,8 @@ class UserController extends Controller
      */
     public function update(User $user, Update $request): JsonResponse
     {
-        $user = $this->userService->update($user, $request->validated());
+        $user = $this->userService
+            ->update($user, $request->validated());
 
         return Response::data([
             'data' => $user
@@ -41,7 +42,8 @@ class UserController extends Controller
      */
     public function toggleCriticalRateChangeAlert(User $user): JsonResponse
     {
-        $user = $this->userService->toggleCriticalRateChangeSubscription($user);
+        $user = $this->userService
+            ->toggleCriticalRateChangeSubscription($user);
 
         return Response::data([
             'data' => $user

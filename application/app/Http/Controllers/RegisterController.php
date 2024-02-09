@@ -27,12 +27,14 @@ class RegisterController extends Controller
     public function __invoke(Register $request): JsonResponse
     {
         $attributes = $request->validated();
-        $user = $this->userService->firstOrCreate([
+        $user = $this->userService
+            ->firstOrCreate([
             'name' => Arr::get($attributes, 'name'),
             'email' => Arr::get($attributes, 'email'),
             'password' => Hash::make(Arr::get($attributes, 'password')),
         ]);
-        $token = $user->createToken('api-token')->plainTextToken;
+        $token = $user->createToken('api-token')
+            ->plainTextToken;
 
         return Response::data([
             'token' => $token,

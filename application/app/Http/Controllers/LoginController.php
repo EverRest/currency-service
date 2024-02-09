@@ -30,7 +30,8 @@ class LoginController extends Controller
         $user = Auth::user();
 
         return Response::data([
-            'token' => $user->createToken('api-token')->plainTextToken,
+            'token' => $user->createToken('api-token')
+                ->plainTextToken,
             'user' => $user,
         ]);
     }

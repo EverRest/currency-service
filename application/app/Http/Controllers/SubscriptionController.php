@@ -28,7 +28,8 @@ class SubscriptionController extends Controller
     public function list(Request $request): JsonResponse
     {
 
-        $response = $this->subscriptionService->list($request->all());
+        $response = $this->subscriptionService
+            ->list($request->all());
 
         return Response::data($response);
     }
@@ -40,7 +41,22 @@ class SubscriptionController extends Controller
      */
     public function store(Store $request): JsonResponse
     {
-        $response = $this->subscriptionService->firstOrCreate($request->validated());
+        $response = $this->subscriptionService
+            ->firstOrCreate($request->validated());
+
+        return Response::data($response);
+    }
+
+    /**
+     * @param Subscription $subscription
+     * @param Store $request
+     *
+     * @return JsonResponse
+     */
+    public function update(Subscription $subscription, Store $request): JsonResponse
+    {
+        $response = $this->subscriptionService
+            ->update($subscription, $request->validated());
 
         return Response::data($response);
     }
@@ -53,7 +69,8 @@ class SubscriptionController extends Controller
      */
     public function destroy(Subscription $subscription): JsonResponse
     {
-        $response = $this->subscriptionService->destroy($subscription);
+        $response = $this->subscriptionService
+            ->destroy($subscription);
 
         return Response::data($response);
     }

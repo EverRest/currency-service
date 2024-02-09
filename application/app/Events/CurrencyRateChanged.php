@@ -16,6 +16,8 @@ class CurrencyRateChanged
 
     /**
      * Create a new event instance.
+     *
+     * @param CurrencyRate $currencyRate
      */
     public function __construct(public readonly CurrencyRate $currencyRate)
     {

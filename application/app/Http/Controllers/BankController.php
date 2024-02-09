@@ -25,7 +25,8 @@ class BankController extends Controller
      */
     public function list(Request $request): JsonResponse
     {
-        $response = $this->bankService->list($request->all());
+        $response = $this->bankService
+            ->list($request->all());
 
         return Response::data($response);
     }

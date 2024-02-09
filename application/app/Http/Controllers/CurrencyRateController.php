@@ -33,7 +33,8 @@ class CurrencyRateController extends Controller
      */
     public function currentRates(Request $request): JsonResponse
     {
-        $response = $this->currencyRateService->list($request->all());
+        $response = $this->currencyRateService
+            ->list($request->all());
 
         return Response::data($response);
     }
@@ -43,7 +44,8 @@ class CurrencyRateController extends Controller
      */
     public function avgRates(): JsonResponse
     {
-        $response = $this->currencyRateService->getAvgRates();
+        $response = $this->currencyRateService
+            ->getAvgRates();
 
         return Response::data($response);
     }
@@ -61,7 +63,8 @@ class CurrencyRateController extends Controller
             $this->bankService->list()->pluck('id')->toArray();
         $currencyIds = $request->has('currency_id') ? $request->get('currency_id', []) :
             $this->currencyService->list()->pluck('id')->toArray();
-        $response = $this->currencyRateService->getStatisticByPeriod($fromDate, $toDate, $bankIds, $currencyIds);
+        $response = $this->currencyRateService
+            ->getStatisticByPeriod($fromDate, $toDate, $bankIds, $currencyIds);
 
         return Response::data($response);
     }
