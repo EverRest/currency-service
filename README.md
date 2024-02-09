@@ -20,7 +20,10 @@ cp .env.example .env
 ```
 php artisan key:generate
 ```
-#### Run migration and seed
+#### Scheduled console command to store current CurrencyRates
 ```
-php artisan migrate --seed
+php artisan app:store-currency-rates
 ```
+#### Scheduled console command to update BankBranches
+```
+php artisan app:update-bank-branches
