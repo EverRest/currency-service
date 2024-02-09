@@ -35,7 +35,7 @@ php artisan queue:work
 ```
 php artisan db:seed
 ```
------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------
 
 #### Additional console commands
 #### Scheduled console command to store current CurrencyRates
@@ -46,8 +46,6 @@ php artisan app:store-currency-rates
 ```
 php artisan app:update-bank-branches
 ```
-
-------------------------------------------------------------------------------------------------------
 
 ### To test notification you need to add mailing provider(for example MAILTRAP) and enable emailing in your .env `MAIL_ENABLED=true`
 
