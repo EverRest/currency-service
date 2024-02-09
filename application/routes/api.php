@@ -49,7 +49,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/closest', [BankBranchController::class, 'getClosestBanks'])->name('closest-bank-branches');
     });
     Route::group(['prefix' => 'currency-rates', 'name' => 'currency-rates'], function () {
-        Route::get('/', [CurrencyRateController::class, 'list'])->name('list');
+        Route::get('/', [CurrencyRateController::class, 'getCurrentRates'])->name('current-currency-rates');
+        Route::get('/avg', [CurrencyRateController::class, 'getAvgRates'])->name('avg-rates');
     });
     Route::group(['prefix' => 'subscriptions', 'name' => 'subscriptions'], function () {
         Route::get('/', [SubscriptionController::class, 'list'])->name('list');

@@ -7,7 +7,9 @@ use App\Models\CurrencyRate;
 use App\Notifications\CriticalRateChangedNotification;
 use App\Services\Abstracts\ServiceWithEloquentModel;
 use App\Traits\HasGetRateChangeInPercents;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
 class CurrencyRateService extends ServiceWithEloquentModel
@@ -20,6 +22,10 @@ class CurrencyRateService extends ServiceWithEloquentModel
      * @var string $model
      */
     protected string $model = CurrencyRate::class;
+
+    public function __construct(private readonly BankService $bankService, private readonly CurrencyService $currencyService)
+    {
+    }
 
     /**
      * Check if the rate change is critical.
@@ -72,6 +78,37 @@ class CurrencyRateService extends ServiceWithEloquentModel
             ->whereNot('id', $newCurrencyRate->id)
             ->orderByDesc('date')
             ->first();
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getAvgRates(): Collection
+    {
+        return Collection::make([
+            'avg' => $this->query()->averageRate(),
+            'nbu' => $this->query()->nbuRateForCurrencies($this->bankService->query()->get()->pluck('id')->toArray()),
+        ]);
+    }
+
+    /**
+     * @param $query
+     * @param array $filter
+     *
+     * @return Builder
+     */
+    protected function filter($query, array $filter): Builder
+    {
+        Arr::has($filter, 'bank_id')
+            ? $query->byBanks(Arr::get($filter, 'bank_id'))
+            : $query->byBanks($this->bankService->query()->get()->pluck('id')->toArray());
+
+        Arr::has($filter, 'currency_id')
+            ? $query->byCurrencies(Arr::get($filter, 'currency_id'))
+            : $query->byCurrencies($this->currencyService->query()->get()->pluck('id')->toArray());
+        $query->latestDate();
+
+        return parent::filter($query, Arr::except($filter, ['bank_id', 'currency_id']));
     }
 
     /**

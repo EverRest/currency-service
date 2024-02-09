@@ -24,9 +24,21 @@ class CurrencyRateController extends Controller
      *
      * @return JsonResponse
      */
-    public function list(Request $request): JsonResponse
+    public function getCurrentRates(Request $request): JsonResponse
     {
         $response = $this->currencyRateService->list($request->all());
+
+        return Response::data($response);
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function getAvgRates(Request $request): JsonResponse
+    {
+        $response = $this->currencyRateService->getAvgRates();
 
         return Response::data($response);
     }
