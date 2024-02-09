@@ -34,8 +34,6 @@ php artisan schedule:work
 php artisan queue:work
 ```
 
-```
-```
 # Additional console commands
 #### Scheduled console command to store current CurrencyRates
 ```
