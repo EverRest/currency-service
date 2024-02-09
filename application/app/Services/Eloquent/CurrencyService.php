@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Services\Eloquent;
 
 use App\Models\Currency;
-use App\Services\Abstracts\ServiceWithEloquentModel;
+use App\Services\Super\ServiceWithEloquentModel;
 
 class CurrencyService extends ServiceWithEloquentModel
 {

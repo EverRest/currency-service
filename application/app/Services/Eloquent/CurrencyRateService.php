@@ -5,7 +5,7 @@ namespace App\Services\Eloquent;
 
 use App\Models\CurrencyRate;
 use App\Notifications\CriticalRateChangedNotification;
-use App\Services\Abstracts\ServiceWithEloquentModel;
+use App\Services\Super\ServiceWithEloquentModel;
 use App\Traits\HasGetRateChangeInPercents;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;

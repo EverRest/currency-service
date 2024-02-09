@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Services\Eloquent;
 
 use App\Models\BankBranch;
-use App\Services\Abstracts\ServiceWithEloquentModel;
+use App\Services\Super\ServiceWithEloquentModel;
 use App\Services\Http\GeoService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;

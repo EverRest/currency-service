@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Services\Eloquent;
 
 use App\Models\Subscription;
-use App\Services\Abstracts\ServiceWithEloquentModel;
+use App\Services\Super\ServiceWithEloquentModel;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
