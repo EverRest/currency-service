@@ -4,8 +4,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Subscription\Store;
+use App\Http\Requests\Subscription\Update;
 use App\Models\Subscription;
 use App\Services\Eloquent\SubscriptionService;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Response;
@@ -38,25 +40,29 @@ class SubscriptionController extends Controller
      * @param Store $request
      *
      * @return JsonResponse
+     * @throws Exception
      */
     public function store(Store $request): JsonResponse
     {
+        $attributes = $request->validated();
         $response = $this->subscriptionService
-            ->firstOrCreate($request->validated());
+            ->store($attributes);
 
         return Response::data($response);
     }
 
     /**
      * @param Subscription $subscription
-     * @param Store $request
+     * @param Update $request
      *
      * @return JsonResponse
+     * @throws Exception
      */
-    public function update(Subscription $subscription, Store $request): JsonResponse
+    public function update(Subscription $subscription, Update $request): JsonResponse
     {
+        $attributes = $request->validated();
         $response = $this->subscriptionService
-            ->update($subscription, $request->validated());
+            ->update($subscription, $attributes);
 
         return Response::data($response);
     }

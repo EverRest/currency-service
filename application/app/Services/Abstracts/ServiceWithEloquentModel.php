@@ -30,7 +30,6 @@ class ServiceWithEloquentModel
     public function list(array $data = []): Collection
     {
         $query = $this->search($data);
-        $this->with($query);
         $this->filter(
             $query,
             Arr::except(
@@ -48,7 +47,7 @@ class ServiceWithEloquentModel
             $query,
             Arr::only($data, [Config::get("pagination.sort_key"), Config::get("pagination.order_key")]),
         );
-        return $query->get();
+        return $query->lockForUpdate()->get();
     }
 
     /**
@@ -99,7 +98,6 @@ class ServiceWithEloquentModel
             if (!is_string($filterKey)) {
                 continue;
             }
-
             if (is_array($filterValue)) {
                 $query->whereIn($filterKey, $filterValue);
             } else {
@@ -119,6 +117,7 @@ class ServiceWithEloquentModel
     protected function paginate($query, array $data): Paginator
     {
         $limit = Arr::get($data, Config::get('pagination.limit_key')) ?: Config::get('pagination.limit_per_page');
+
         return $query->paginate($limit);
     }
 
@@ -134,7 +133,7 @@ class ServiceWithEloquentModel
         $order = $this->getDirectionColumn($data);
         $query->when(
             $sort,
-            fn ($query) => $query->orderBy($sort, $order)
+            fn($query) => $query->orderBy($sort, $order)
         );
 
         return $query;

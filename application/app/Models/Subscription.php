@@ -28,6 +28,14 @@ class Subscription extends Model
     ];
 
     /**
+     * @var string[] $with
+     */
+    protected $with = [
+      'currencies',
+      'banks',
+    ];
+
+    /**
      * @return BelongsTo
      */
     public function user(): BelongsTo
@@ -40,7 +48,12 @@ class Subscription extends Model
      */
     public function banks(): BelongsToMany
     {
-        return $this->belongsToMany(Bank::class, 'subscription_bank', 'subscription_id', 'bank_id');
+        return $this->belongsToMany(
+            Bank::class,
+            'subscription_bank',
+            'subscription_id',
+            'bank_id'
+        );
     }
 
     /**
@@ -48,6 +61,11 @@ class Subscription extends Model
      */
     public function currencies(): BelongsToMany
     {
-        return $this->belongsToMany(Currency::class, 'subscription_currency', 'subscription_id', 'currency_id');
+        return $this->belongsToMany(
+            Currency::class,
+            'subscription_currency',
+            'subscription_id',
+            'currency_id'
+        );
     }
 }

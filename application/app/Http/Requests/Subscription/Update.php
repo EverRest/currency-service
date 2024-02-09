@@ -6,7 +6,7 @@ namespace App\Http\Requests\Subscription;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class Store extends FormRequest
+class Update extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -16,11 +16,10 @@ class Store extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id'    => 'required|exists:users,id',
             'currency_id' => 'required|array',
-            'currency_id.*' => 'exists:currencies,id',
-            'bank_id'    => 'required|array',
-            'bank_id.*' => 'exists:banks,id',
+            'currency_id.*' => 'required:currencies,id',
+            'bank_id' => 'required|array',
+            'bank_id.*' => 'required:banks,id',
         ];
     }
 }
