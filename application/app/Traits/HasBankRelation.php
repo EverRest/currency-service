@@ -9,6 +9,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 trait HasBankRelation
 {
     /**
+     * @param $related
+     * @param $foreignKey
+     * @param $ownerKey
+     * @param $relation
+     *
+     * @return BelongsTo
+     */
+    abstract public function belongsTo($related, $foreignKey = null, $ownerKey = null, $relation = null);
+
+    /**
      * @return BelongsTo
      */
     public function bank(): BelongsTo
