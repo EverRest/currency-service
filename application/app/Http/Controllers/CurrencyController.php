@@ -24,8 +24,9 @@ class CurrencyController extends Controller
      */
     public function list(Request $request): JsonResponse
     {
+        $attributes = $request->all();
         $response = $this->currencyService
-            ->list($request->all());
+            ->list($attributes);
 
         return Response::data($response);
     }

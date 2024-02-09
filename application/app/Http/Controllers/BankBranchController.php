@@ -24,12 +24,16 @@ class BankBranchController extends Controller
      */
     public function list(Request $request): JsonResponse
     {
+        $attributes = $request->all();
         $response = $this->bankBranchService
-            ->list($request->all());
+            ->list($attributes);
 
         return Response::data($response);
     }
 
+    /**
+     * @return JsonResponse
+     */
     public function getClosestBanks(): JsonResponse
     {
         $response = $this->bankBranchService
