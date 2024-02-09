@@ -98,9 +98,10 @@ class CurrencyRate extends Model
      */
     public function scopeNbuRate(Builder $query): mixed
     {
-        return $query->whereHas('bank', function (Builder $q) {
-            $q->where('code', 'nbu');
-        })->latestDate()->first();
+        return $query->whereHas(
+            'bank',
+            fn(Builder $q) => $q->where('code', 'nbu')
+        )->latestDate()->first();
     }
 
     /**
@@ -114,9 +115,10 @@ class CurrencyRate extends Model
     public function scopeNbuRateForCurrencies(Builder $query, array $currencyIds): mixed
     {
         return $query->whereIn('currency_id', $currencyIds)
-            ->whereHas('bank', function (Builder $q) {
-                $q->where('code', 'nbu');
-            })->latestDate()->get();
+            ->whereHas(
+                'bank',
+                fn(Builder $q) => $q->where('code', 'nbu')
+            )->latestDate()->get();
     }
 
     /**
@@ -126,10 +128,11 @@ class CurrencyRate extends Model
      */
     public function scopeAverageRate(Builder $query): mixed
     {
-        return $query->whereHas('bank', function (Builder $q) {
-            $q->where('code', '!=', 'nbu');
-        })
-            ->selectRaw('COALESCE(AVG(bid), ?) as bid', [0.0])
+        return $query
+            ->whereHas(
+                'bank',
+                fn(Builder $q) => $q->where('code', '!=', 'nbu')
+            )->selectRaw('COALESCE(AVG(bid), ?) as bid', [0.0])
             ->selectRaw('COALESCE(AVG(ask), ?) as ask', [0.0])
             ->first();
     }

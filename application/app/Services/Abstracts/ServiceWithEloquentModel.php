@@ -132,9 +132,10 @@ class ServiceWithEloquentModel
     {
         $sort = $this->getSortColumn($data);
         $order = $this->getDirectionColumn($data);
-        $query->when($sort, function ($query) use ($sort, $order) {
-            return $query->orderBy($sort, $order);
-        });
+        $query->when(
+            $sort,
+            fn ($query) => $query->orderBy($sort, $order)
+        );
 
         return $query;
     }
@@ -216,6 +217,7 @@ class ServiceWithEloquentModel
     public function update(Model $model, array $data): Model
     {
         $model->fill($data)->save();
+
         return $model->refresh();
     }
 

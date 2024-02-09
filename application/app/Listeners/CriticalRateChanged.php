@@ -4,11 +4,9 @@ declare(strict_types=1);
 namespace App\Listeners;
 
 use App\Events\CurrencyRateChanged;
-use App\Models\Currency;
 use App\Services\Eloquent\CriticalRateChangeHistoryService;
 use App\Services\Eloquent\CurrencyRateService;
 use App\Services\Eloquent\UserService;
-use Illuminate\Database\Eloquent\Model;
 
 class CriticalRateChanged
 {
