@@ -33,7 +33,7 @@ php artisan db:seed
 php artisan schedule:work
 php artisan queue:work
 ```
-php artisan db:seed
+
 ```
 ```
 # Additional console commands
