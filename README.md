@@ -6,7 +6,9 @@ docker-compose up --build -d
 ```
 #### 2. Connect to app container
 ```
-docker exec -it currency-service-php-fpm /bin/sh or docker run currency-service-php-fpm {command}
+docker exec -it currency-service-php-fpm /bin/sh
+ or
+ docker run currency-service-php-fpm {command}
 ```
 #### 3. Run composer install
 ```
