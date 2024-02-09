@@ -48,7 +48,7 @@ class StoreCurrentRatesJob implements ShouldQueue
         $bankCodes = $banks->pluck('code')->toArray();
         $this->currencyService->query()
             ->each(
-                fn($currency) => $this->storeCurrencyRates($currency, $banks->to, $bankCodes)
+                fn($currency) => $this->storeCurrencyRates($currency, $banks, $bankCodes)
             );
     }
 
