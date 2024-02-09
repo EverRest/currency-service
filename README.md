@@ -6,7 +6,9 @@ docker-compose up --build -d
 ```
 #### 2. Connect to app container
 ```
-docker exec -it currency-service-php-fpm /bin/sh or docker run currency-service-php-fpm {command}
+docker exec -it currency-service-php-fpm /bin/sh
+ or
+docker-compose run currency-service-php-fpm {command}
 ```
 #### 3. Run composer install
 ```
@@ -33,14 +35,8 @@ php artisan db:seed
 php artisan schedule:work
 php artisan queue:work
 ```
-php artisan db:seed
-```
 
-
-
-
-
-#### Additional console commands
+# Additional console commands
 #### Scheduled console command to store current CurrencyRates
 ```
 php artisan app:store-currency-rates
@@ -50,5 +46,5 @@ php artisan app:store-currency-rates
 php artisan app:update-bank-branches
 ```
 
-### To test notification you need to add mailing provider(for example MAILTRAP) and enable emailing in your .env `MAIL_ENABLED=true`
+### To test notification you need to add mailing provider(for example MAILTRAP) configuration and enable emailing in your .env `MAIL_ENABLED=true`
 
