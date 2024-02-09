@@ -35,12 +35,8 @@ php artisan queue:work
 ```
 php artisan db:seed
 ```
-
-
-
-
-
-#### Additional console commands
+```
+# Additional console commands
 #### Scheduled console command to store current CurrencyRates
 ```
 php artisan app:store-currency-rates
