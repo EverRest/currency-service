@@ -46,5 +46,5 @@ php artisan app:store-currency-rates
 php artisan app:update-bank-branches
 ```
 
-### To test notification you need to add mailing provider(for example MAILTRAP) and enable emailing in your .env `MAIL_ENABLED=true`
+### To test notification you need to add mailing provider(for example MAILTRAP) configuration and enable emailing in your .env `MAIL_ENABLED=true`
 
