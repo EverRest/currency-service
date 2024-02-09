@@ -8,6 +8,7 @@ use App\Traits\HasGetRateChangeInPercents;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Config;
 
 
 class AppRateChangedNotification extends Notification

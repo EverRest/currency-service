@@ -29,7 +29,7 @@ class MinFinService
             }
             $currentPage++;
 
-        } while (Arr::get($response, 'h as_next_page'));
+        } while (Arr::get($response, 'has_next_page'));
 
         return $allRates;
     }
@@ -43,7 +43,7 @@ class MinFinService
      */
     private function getExchangeRates(string $slug = '', int $page = 1): array
     {
-        $response = Http::get(self::MIN_FIN_URL . 'rates/banks/USD', compact('slug', 'page'));
+        $response = Http::get(self::MIN_FIN_URL . "rates/banks/$slug", compact('slug', 'page'));
         $json = $response->json();
 
         return [

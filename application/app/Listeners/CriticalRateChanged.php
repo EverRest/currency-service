@@ -7,9 +7,12 @@ use App\Events\CurrencyRateChanged;
 use App\Services\Eloquent\CriticalRateChangeHistoryService;
 use App\Services\Eloquent\CurrencyRateService;
 use App\Services\Eloquent\UserService;
+use App\Traits\HasIsMailEnabled;
 
 class CriticalRateChanged
 {
+    use HasIsMailEnabled;
+
     /**
      * @param CurrencyRateService $currencyRateService
      * @param UserService $userService
@@ -30,6 +33,9 @@ class CriticalRateChanged
      */
     public function handle(CurrencyRateChanged $event): void
     {
+        if (!$this->getIsMailEnabled()) {
+            return;
+        }
         $newCurrencyRate = $event->currencyRate;
         if ($this->currencyRateService->checkForCriticalChange($newCurrencyRate)) {
             $notifiers = $this->userService->getUsersWithEnabledAlert();

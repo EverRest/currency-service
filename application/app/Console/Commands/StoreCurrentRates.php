@@ -4,6 +4,11 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Jobs\StoreCurrentRatesJob;
+use App\Services\Eloquent\BankService;
+use App\Services\Eloquent\CurrencyRateService;
+use App\Services\Eloquent\CurrencyService;
+use App\Services\Http\MinFinService;
+use App\Services\Http\NbuService;
 use Illuminate\Console\Command;
 
 class StoreCurrentRates extends Command
@@ -27,9 +32,21 @@ class StoreCurrentRates extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): int
+    public function handle(
+        BankService         $bankService,
+        CurrencyService     $currencyService,
+        CurrencyRateService $currencyRateService,
+        MinFinService       $minFinService,
+        NbuService          $nbuService
+    ): int
     {
-        StoreCurrentRatesJob::dispatch();
+        StoreCurrentRatesJob::dispatch(
+            $bankService,
+            $currencyService,
+            $currencyRateService,
+            $minFinService,
+            $nbuService,
+        );
         $this->info(self::SUCCESS_MESSAGE);
 
         return 1;
