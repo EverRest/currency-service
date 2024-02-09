@@ -28,6 +28,27 @@ class CurrencyRateService extends ServiceWithEloquentModel
     }
 
     /**
+     * @param mixed $fromDate
+     * @param mixed $toDate
+     * @param array $bankIds
+     * @param array $currencyIds
+     *
+     * @return Collection
+     */
+    public function getStatisticByPeriod(mixed $fromDate, mixed $toDate, array $bankIds, array $currencyIds): Collection
+    {
+        return $this->query()
+            ->whereBetween('date', [$fromDate, $toDate])
+            ->when($bankIds, function ($query) use ($bankIds) {
+                return $query->whereIn('bank_id', $bankIds);
+            })
+            ->when($currencyIds, function ($query) use ($currencyIds) {
+                return $query->whereIn('currency_id', $currencyIds);
+            })
+            ->get();
+    }
+
+    /**
      * Check if the rate change is critical.
      *
      * @param CurrencyRate $newCurrencyRate
