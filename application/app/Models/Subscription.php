@@ -31,8 +31,9 @@ class Subscription extends Model
      * @var string[] $with
      */
     protected $with = [
-      'currencies',
-      'banks',
+        'currencies',
+        'banks',
+        'user',
     ];
 
     /**

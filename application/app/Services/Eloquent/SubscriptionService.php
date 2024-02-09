@@ -6,6 +6,7 @@ namespace App\Services\Eloquent;
 use App\Models\Subscription;
 use App\Services\Abstracts\ServiceWithEloquentModel;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -62,5 +63,19 @@ class SubscriptionService extends ServiceWithEloquentModel
             DB::rollBack();
             throw new Exception($e->getMessage());
         }
+    }
+
+    /**
+     * @param $query
+     *
+     * @return Builder
+     */
+    protected function with($query): Builder
+    {
+        return $query->with([
+            'currencies',
+            'banks',
+            'user',
+        ]);
     }
 }

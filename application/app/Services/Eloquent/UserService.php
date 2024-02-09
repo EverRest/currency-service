@@ -32,4 +32,21 @@ class UserService extends ServiceWithEloquentModel
     {
         return $this->query()->where('is_alert_enabled', true)->get();
     }
+
+    /**
+     * @param int $bankId
+     * @param int $currencyId
+     *
+     * @return Collection
+     */
+    public function getUsersWithSubscription(int $bankId, int $currencyId): Collection
+    {
+        return $this->query()
+            ->whereHas('subscriptions', function ($query) use ($bankId, $currencyId) {
+                $query->whereHas('banks',
+                    fn($bankQuery) => $bankQuery->where('banks.id', $bankId)
+                )->whereHas('currencies', fn($currencyQuery) => $currencyQuery->where('currencies.id', $currencyId)
+                );
+            })->get();
+    }
 }
