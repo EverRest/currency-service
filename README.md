@@ -1,26 +1,45 @@
 # Set Up
-#### Run docker container
+#### 1. Run docker-compose containers bundle
 ###### 
 ```
 docker-compose up --build -d
 ```
-#### Connect to app container
+#### 2. Connect to app container
 ```
-docker exec -it currency-service-php-fpm /bin/sh
+docker exec -it currency-service-php-fpm /bin/sh or docker run currency-service-php-fpm {command}
 ```
-#### Run composer install
+#### 3. Run composer install
 ```
 composer install
 ```
-#### Copy .env
+#### 4. Copy .env
 ```
 cp .env.example .env
 ```
-#### Generate key
+#### 5. Generate app key
 ```
 php artisan key:generate
 ```
-#### Run migration and seed
+#### 6. Run migrations
 ```
-php artisan migrate --seed
+php artisan migrate
 ```
+#### 7. Run seeds
+```
+php artisan db:seed
+```
+#### 7. Run scheduler and queues(`sync` mode by default) if you are changing default queue driver
+```
+php artisan schedule:work
+php artisan queue:work
+```
+php artisan db:seed
+```
+# Additional console commands
+#### Scheduled console command to store current CurrencyRates
+```
+php artisan app:store-currency-rates
+```
+#### Scheduled console command to update BankBranches
+```
+php artisan app:update-bank-branches
