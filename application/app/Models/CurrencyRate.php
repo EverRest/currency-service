@@ -105,25 +105,22 @@ class CurrencyRate extends Model
     }
 
     /**
-     * Scope to get the latest NBU rate for a list of currencies.
-     *
      * @param Builder $query
-     * @param array $currencyIds
-     *
      * @return mixed
      */
-    public function scopeNbuRateForCurrencies(Builder $query, array $currencyIds): mixed
+    public function scopeNbuRateForCurrencies(Builder $query): mixed
     {
-        return $query->whereIn('currency_id', $currencyIds)
+        return $query
             ->whereHas(
                 'bank',
                 fn(Builder $q) => $q->where('code', 'nbu')
-            )->latestDate()->get();
+            )
+            ->latestDate()
+            ->get();
     }
 
     /**
      * @param Builder $query
-     *
      * @return mixed
      */
     public function scopeAverageRate(Builder $query): mixed
@@ -132,8 +129,10 @@ class CurrencyRate extends Model
             ->whereHas(
                 'bank',
                 fn(Builder $q) => $q->where('code', '!=', 'nbu')
-            )->selectRaw('COALESCE(AVG(bid), ?) as bid', [0.0])
-            ->selectRaw('COALESCE(AVG(ask), ?) as ask', [0.0])
-            ->first();
+            )
+            ->selectRaw('currency_id, COALESCE(AVG(bid), ?) as bid', [0.0])
+            ->selectRaw('currency_id, COALESCE(AVG(ask), ?) as ask', [0.0])
+            ->groupBy('currency_id')
+            ->get();
     }
 }

@@ -23,7 +23,14 @@ class CurrencyRateService extends ServiceWithEloquentModel
      */
     protected string $model = CurrencyRate::class;
 
-    public function __construct(private readonly BankService $bankService, private readonly CurrencyService $currencyService)
+    /**
+     * @param BankService $bankService
+     * @param CurrencyService $currencyService
+     */
+    public function __construct(
+        private readonly BankService     $bankService,
+        private readonly CurrencyService $currencyService,
+    )
     {
     }
 
@@ -106,10 +113,15 @@ class CurrencyRateService extends ServiceWithEloquentModel
      */
     public function getAvgRates(): Collection
     {
-        return Collection::make([
-            'avg' => $this->query()->averageRate(),
-            'nbu' => $this->query()->nbuRateForCurrencies($this->bankService->query()->get()->pluck('id')->toArray()),
-        ]);
+        $avgRates = $this->query()->averageRate();
+        $nbuRates = $this->query()->nbuRateForCurrencies($this->bankService->query()->get()->pluck('id')->toArray());
+
+        $result = [
+            'avg' => $this->mergeRatesWithDetails($avgRates),
+            'nbu' => $this->mergeRatesWithDetails($nbuRates),
+        ];
+
+        return Collection::make($result);
     }
 
     /**
@@ -154,5 +166,25 @@ class CurrencyRateService extends ServiceWithEloquentModel
 
         return $askRateChangeInPercents > self::CRITICAL_RATE_CHANGE_IN_PERCENTS ||
             $bidRateChangeInPercents > self::CRITICAL_RATE_CHANGE_IN_PERCENTS;
+    }
+
+    /**
+     * Merge rates with additional details (bank name and currency code).
+     *
+     * @param Collection $rates
+     * @return Collection
+     */
+    private function mergeRatesWithDetails(Collection $rates): Collection
+    {
+        return $rates->map(function ($rate) {
+            $currency = $this->currencyService->findOrFail($rate->currency_id);
+
+            return [
+                'currency_id' => $rate->currency_id,
+                'bid' => $rate->bid,
+                'ask' => $rate->ask,
+                'currency_code' => $currency->code,
+            ];
+        });
     }
 }

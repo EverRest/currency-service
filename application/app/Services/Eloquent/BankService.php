@@ -5,9 +5,12 @@ namespace App\Services\Eloquent;
 
 use App\Models\Bank;
 use App\Services\Abstracts\ServiceWithEloquentModel;
+use App\Traits\HasFindByCode;
 
 class BankService extends ServiceWithEloquentModel
 {
+    use HasFindByCode;
+
     /**
      * @var string $model
      */
