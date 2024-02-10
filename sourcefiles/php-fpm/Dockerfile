@@ -1,4 +1,5 @@
 FROM php:8.2-fpm-alpine
+
 WORKDIR "/application"
 
 # Fix debconf warnings upon build
@@ -40,9 +41,12 @@ RUN apk --no-cache add \
     zlib-dev \
     && npm install -g npm
 
-# Install git
-RUN apt-get update \
-    && apt-get -y install git \
-    && apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
+# Install Redis extension using PECL
+RUN apk --no-cache add \
+    build-base \
+    git \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && apk del build-base git
 
 EXPOSE 9000
