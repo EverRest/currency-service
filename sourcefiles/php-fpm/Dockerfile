@@ -49,4 +49,14 @@ RUN apk --no-cache add \
     && docker-php-ext-enable redis \
     && apk del build-base git
 
+# Copy Supervisor worker configuration
+COPY supervisord.conf /etc/supervisor/supervisord.conf
+
+# Install Supervisor
+RUN apk --no-cache add supervisor
+
+# Create the log directory for Supervisor
+RUN mkdir -p /var/log/supervisor
+
 EXPOSE 9000
+

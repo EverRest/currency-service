@@ -5,6 +5,8 @@ namespace App\Console\Commands;
 
 use App\Jobs\UpdateOrCreateBankBranchesJob;
 use Illuminate\Console\Command;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class UpdateBankBranches extends Command
 {
@@ -30,7 +32,7 @@ class UpdateBankBranches extends Command
     public function handle(): int
     {
         UpdateOrCreateBankBranchesJob::dispatch();
-        $this->info(self::SUCCESS_MESSAGE);
+        $this->info(get_class($this) . ' : ' . Carbon::now()->toDateTimeString() . ' - ' . self::SUCCESS_MESSAGE);
 
         return 1;
     }

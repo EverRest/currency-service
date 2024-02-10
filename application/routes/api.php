@@ -1,14 +1,14 @@
 <?php
 
-use App\Http\Controllers\BankBranchController;
-use App\Http\Controllers\BankController;
-use App\Http\Controllers\CurrencyController;
-use App\Http\Controllers\CurrencyRateController;
-use App\Http\Controllers\LoginController;
-use App\Http\Controllers\LogoutController;
-use App\Http\Controllers\RegisterController;
-use App\Http\Controllers\SubscriptionController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\Api\BankBranchController;
+use App\Http\Controllers\Api\BankController;
+use App\Http\Controllers\Api\CurrencyController;
+use App\Http\Controllers\Api\CurrencyRateController;
+use App\Http\Controllers\Api\LoginController;
+use App\Http\Controllers\Api\LogoutController;
+use App\Http\Controllers\Api\RegisterController;
+use App\Http\Controllers\Api\SubscriptionController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 

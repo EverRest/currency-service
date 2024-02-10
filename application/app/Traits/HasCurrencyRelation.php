@@ -7,14 +7,15 @@ use App\Models\Currency;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 trait HasCurrencyRelation
-{    /**
- * @param $related
- * @param $foreignKey
- * @param $ownerKey
- * @param $relation
- *
- * @return BelongsTo
- */
+{
+    /**
+     * @param $related
+     * @param $foreignKey
+     * @param $ownerKey
+     * @param $relation
+     *
+     * @return BelongsTo
+     */
     abstract public function belongsTo($related, $foreignKey = null, $ownerKey = null, $relation = null);
 
     /**

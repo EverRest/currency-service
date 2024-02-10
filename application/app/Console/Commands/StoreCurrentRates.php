@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\StoreCurrentRatesJob;
 use Illuminate\Console\Command;
+use Illuminate\Support\Carbon;
 
 class StoreCurrentRates extends Command
 {
@@ -30,7 +31,7 @@ class StoreCurrentRates extends Command
     public function handle(): int
     {
         StoreCurrentRatesJob::dispatch();
-        $this->info(self::SUCCESS_MESSAGE);
+        $this->info(get_class($this) . ' : ' . Carbon::now()->toDateTimeString() . ' - ' . self::SUCCESS_MESSAGE);
 
         return 1;
     }

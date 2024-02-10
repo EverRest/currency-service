@@ -39,11 +39,13 @@ services:
     volumes:
       - ./application:/application
       - ./sourcefiles/php-fpm/php-ini-overrides.ini:/usr/local/etc/php/conf.d/99-overrides.ini
+      - ./sourcefiles/php-fpm/supervisord.conf:/etc/supervisor/supervisord.conf
     depends_on:
       - postgres
     networks:
       private_net:
         ipv4_address: 172.28.1.4
+#    command: [ "supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf",]
 
   redis:
     image: 'bitnami/redis:latest'

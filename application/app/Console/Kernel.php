@@ -15,8 +15,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command(UpdateBankBranches::class)->dailyAt('00:01')->weekdays();
-        $schedule->command(StoreCurrentRates::class)->hourly()->between('9:00', '18:00')->weekdays();
+        $schedule->command(UpdateBankBranches::class)
+            ->dailyAt('00:01')->weekdays();
+        $schedule->command(StoreCurrentRates::class)
+            ->hourly()->between('9:00', '18:00')->weekdays();
     }
 
     /**
@@ -24,7 +26,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands(): void
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }
