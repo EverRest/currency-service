@@ -796,13 +796,27 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/bank-branches/closest",
+							"raw": "{{base_url}}/bank-branches/closest?lat=50.745351&lng=29.807372&radius=15",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"bank-branches",
 								"closest"
+							],
+							"query": [
+								{
+									"key": "lat",
+									"value": "50.745351"
+								},
+								{
+									"key": "lng",
+									"value": "29.807372"
+								},
+								{
+									"key": "radius",
+									"value": "15"
+								}
 							]
 						},
 						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."

@@ -41,7 +41,7 @@ class BankBranchController extends Controller
     public function getClosestBanks(ClosestBank $request): JsonResponse
     {
         $response = $this->bankBranchService
-            ->getClosestBanks($request->lat, $request->lng,);
+            ->getClosestBanks($request->lat, $request->lng, $request->radius);
 
         return Response::data($response);
     }

@@ -7,8 +7,9 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * @property mixed lat
- * @property mixed lng
+ * @property numeric $lat
+ * @property numeric $lng
+ * @property numeric $request
  */
 class ClosestBank extends FormRequest
 {
@@ -22,6 +23,21 @@ class ClosestBank extends FormRequest
         return [
             'lat' => ['required', 'numeric'],
             'lng' => ['required', 'numeric'],
+            'radius' => ['required', 'numeric', 'min:1', 'max:100000']
         ];
+    }
+
+    /**
+     * Prepare the data for validation.
+     *
+     * @return void
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'lat' => (float) $this->lat,
+            'lng' => (float) $this->lng,
+            'radius' => (float) $this->radius
+        ]);
     }
 }
