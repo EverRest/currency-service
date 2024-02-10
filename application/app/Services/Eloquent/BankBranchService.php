@@ -19,22 +19,23 @@ class BankBranchService extends ServiceWithEloquentModel
     /**
      * Get the closest banks.
      *
+     * @param mixed $lat
+     * @param mixed $lng
      * @param float $radius
      *
      * @return Collection
      */
-    public function getClosestBanks(float $radius = 5): Collection
+    public function getClosestBanks(mixed $lat, mixed $lng, float $radius = 25): Collection
     {
-        $geoData = GeoService::getGeoData();
-        $lat = Arr::get($geoData, 'lat');
-        $lng = Arr::get($geoData, 'lng');
-
-        return  BankBranch::select('bank_branches.*')
+        return BankBranch::select('bank_branches.*')
             ->selectRaw(
                 '(6371 * acos(cos(radians(?)) * cos(radians(lat)) * cos(radians(lng) - radians(?)) + sin(radians(?)) * sin(radians(lat)))) as distance',
                 [$lat, $lng, $lat]
             )
-            ->havingRaw('6371 * acos(cos(radians(?)) * cos(radians(lat)) * cos(radians(lng) - radians(?)) + sin(radians(?)) * sin(radians(lat))) <= ?', [$lat, $lng, $lat, $radius])
+            ->havingRaw(
+                '6371 * acos(cos(radians(?)) * cos(radians(lat)) * cos(radians(lng) - radians(?)) + sin(radians(?)) * sin(radians(lat))) <= ?',
+                [$lat, $lng, $lat, $radius]
+            )
             ->groupBy('bank_branches.id')
             ->orderBy('distance')
             ->get();

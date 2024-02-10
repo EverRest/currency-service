@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BankBranch\ClosestBank;
 use App\Services\Eloquent\BankBranchService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -33,12 +34,14 @@ class BankBranchController extends Controller
     }
 
     /**
+     * @param ClosestBank $request
+     *
      * @return JsonResponse
      */
-    public function getClosestBanks(): JsonResponse
+    public function getClosestBanks(ClosestBank $request): JsonResponse
     {
         $response = $this->bankBranchService
-            ->getClosestBanks();
+            ->getClosestBanks($request->lat, $request->lng,);
 
         return Response::data($response);
     }
