@@ -4,11 +4,6 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Jobs\StoreCurrentRatesJob;
-use App\Services\Eloquent\BankService;
-use App\Services\Eloquent\CurrencyRateService;
-use App\Services\Eloquent\CurrencyService;
-use App\Services\Http\MinFinService;
-use App\Services\Http\NbuService;
 use Illuminate\Console\Command;
 
 class StoreCurrentRates extends Command

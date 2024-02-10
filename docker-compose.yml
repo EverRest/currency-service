@@ -3,7 +3,7 @@ services:
 
   postgres:
     container_name: currency-service-postgres
-    restart: on-failure
+    restart: always
     image: postgres:latest
     volumes:
       - postgres-data:/var/lib/postgresql/data
@@ -19,7 +19,7 @@ services:
 
   webserver:
     container_name: currency-service-webserver
-    restart: on-failure
+    restart: always
     image: nginx:alpine
     working_dir: /application
     volumes:
@@ -33,7 +33,7 @@ services:
 
   php-fpm:
     container_name: currency-service-php-fpm
-    restart: on-failure
+    restart: always
     build: sourcefiles/php-fpm
     working_dir: /application
     volumes:
@@ -45,16 +45,13 @@ services:
       private_net:
         ipv4_address: 172.28.1.4
 
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    restart: on-failure
+  redis:
+    image: 'bitnami/redis:latest'
+    restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      - ALLOW_EMPTY_PASSWORD=yes
     ports:
-      - "8080:80"
-    depends_on:
-      - postgres
+      - "6379:6379"
     networks:
       private_net:
         ipv4_address: 172.28.1.5
