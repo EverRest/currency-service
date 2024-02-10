@@ -1,3 +1,8 @@
+
+# Technical stack
+
+#### Laravel  Postgres  Redis
+
 # Set Up
 #### 1. Run docker-compose containers bundle
 ###### 
@@ -29,11 +34,6 @@ php artisan migrate
 #### 7. Run seeds
 ```
 php artisan db:seed
-```
-#### 7. Run scheduler and queues(`sync` mode by default) if you are changing default queue driver
-```
-php artisan schedule:work
-php artisan queue:work
 ```
 
 # Additional console commands
