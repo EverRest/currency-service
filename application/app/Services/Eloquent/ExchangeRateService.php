@@ -192,7 +192,9 @@ class ExchangeRateService extends ServiceWithEloquentModel
             'bank_id' => $this->nbuBank->id,
         ];
 
-        return $this->firstOrCreate($attributes);
+        return $this->firstOrCreate(
+            $attributes
+        );
     }
 
     /**

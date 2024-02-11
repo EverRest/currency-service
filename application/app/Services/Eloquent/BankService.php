@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Services\Eloquent;
 
+use App\Enums\ExchangeRateProviderEnum;
 use App\Models\Bank;
 use App\Services\Super\ServiceWithEloquentModel;
 use App\Traits\HasFindByCode;
@@ -12,7 +13,6 @@ use Illuminate\Support\Collection;
 class BankService extends ServiceWithEloquentModel
 {
     use HasFindByCode;
-    private const NBU_BANK_CODE = 'nbu';
 
     /**
      * @var string $model
@@ -26,7 +26,9 @@ class BankService extends ServiceWithEloquentModel
      */
     public function existsByExternalId(int $externalId): bool
     {
-        return $this->query()->where('external_id', $externalId)->exists();
+        return $this->query()
+            ->where('external_id', $externalId)
+            ->exists();
     }
 
     /**
@@ -34,7 +36,7 @@ class BankService extends ServiceWithEloquentModel
      */
     public function getNbuBank(): Model|Bank
     {
-        return $this->findByCode(self::NBU_BANK_CODE);
+        return $this->findByCode(ExchangeRateProviderEnum::NBU);
     }
 
     /**
@@ -42,6 +44,8 @@ class BankService extends ServiceWithEloquentModel
      */
     public function getNotNbuBanks(): Collection
     {
-        return $this->query()->where('code', '!=', self::NBU_BANK_CODE)->get();
+        return $this->query()
+            ->where('code', '!=', ExchangeRateProviderEnum::NBU)
+            ->get();
     }
 }

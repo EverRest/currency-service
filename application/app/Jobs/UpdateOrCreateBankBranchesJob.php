@@ -21,9 +21,9 @@ class UpdateOrCreateBankBranchesJob implements ShouldQueue
      * @param BankService $bankService
      * @param FinanceUaService $financeUaService
      *
-     * @return void
+     * @return int
      */
-    public function handle(BankBranchService $bankBranchService, BankService $bankService, FinanceUaService $financeUaService): void
+    public function handle(BankBranchService $bankBranchService, BankService $bankService, FinanceUaService $financeUaService): int
     {
         foreach ($bankService->getNotNbuBanks() as $bank) {
             $dtoArray = $financeUaService->getBankBranchesDtoArray($bank);
@@ -31,5 +31,7 @@ class UpdateOrCreateBankBranchesJob implements ShouldQueue
                 $bankBranchService->firstOrCreate($bankBranch->toArray());
             }
         }
+
+        return 1;
     }
 }

@@ -24,7 +24,7 @@ class UpdateBankBranches extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Store BankBranches';
 
     /**
      * Execute the console command.

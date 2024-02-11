@@ -43,7 +43,9 @@ class NbuService
             $response->json(),
             function (array $rate) {
                 return $this->availableCurrencies
-                    ->contains(Arr::get($rate, self::NBU_CURRENCY_CODE_KEY));
+                    ->contains(
+                        Arr::get($rate, self::NBU_CURRENCY_CODE_KEY)
+                    );
             }
         );
     }
