@@ -3,16 +3,21 @@ declare(strict_types=1);
 
 namespace App\Services\Eloquent;
 
-use App\Models\CurrencyRate;
+use App\DataTransferObjects\MinFinExchangeRate;
+use App\DataTransferObjects\NbuExchangeRate;
+use App\Models\Bank;
+use App\Models\ExchangeRate;
 use App\Notifications\CriticalRateChangedNotification;
 use App\Services\Super\ServiceWithEloquentModel;
 use App\Traits\HasGetRateChangeInPercents;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Spatie\LaravelData\Data;
 
-class CurrencyRateService extends ServiceWithEloquentModel
+class ExchangeRateService extends ServiceWithEloquentModel
 {
     use HasGetRateChangeInPercents;
 
@@ -21,7 +26,17 @@ class CurrencyRateService extends ServiceWithEloquentModel
     /**
      * @var string $model
      */
-    protected string $model = CurrencyRate::class;
+    protected string $model = ExchangeRate::class;
+
+    /**
+     * @var Collection $currencies
+     */
+    private Collection $currencies;
+
+    /**
+     * @var Bank $nbuBank
+     */
+    private Bank $nbuBank;
 
     /**
      * @param BankService $bankService
@@ -32,6 +47,8 @@ class CurrencyRateService extends ServiceWithEloquentModel
         private readonly CurrencyService $currencyService,
     )
     {
+        $this->currencies = $this->currencyService->list();
+        $this->nbuBank = $this->bankService->getNbuBank();
     }
 
     /**
@@ -58,35 +75,35 @@ class CurrencyRateService extends ServiceWithEloquentModel
     /**
      * Check if the rate change is critical.
      *
-     * @param CurrencyRate $newCurrencyRate
+     * @param ExchangeRate $newExchangeRate
      *
      * @return bool
      */
-    public function checkForCriticalChange(CurrencyRate $newCurrencyRate): bool
+    public function checkForCriticalChange(ExchangeRate $newExchangeRate): bool
     {
         /**
-         * @var CurrencyRate $previousCurrencyRate
+         * @var ExchangeRate $previousExchangeRate
          */
-        $previousCurrencyRate = $this->getPreviousCurrencyRate($newCurrencyRate);
-        if (!$previousCurrencyRate) {
+        $previousExchangeRate = $this->getPreviousExchangeRate($newExchangeRate);
+        if (!$previousExchangeRate) {
             return false;
         }
 
-        return $this->isRateChangeCritical($previousCurrencyRate, $newCurrencyRate);
+        return $this->isRateChangeCritical($previousExchangeRate, $newExchangeRate);
     }
 
     /**
      * @param Collection $notifiers
-     * @param $previousCurrencyRate
-     * @param $newCurrencyRate
+     * @param $previousExchangeRate
+     * @param $newExchangeRate
      *
      * @return void
      */
-    public function notifyCriticalRateChange(Collection $notifiers, $previousCurrencyRate, $newCurrencyRate): void
+    public function notifyCriticalRateChange(Collection $notifiers, $previousExchangeRate, $newExchangeRate): void
     {
         $notifiers->each(
             fn($notifier) => $notifier->notify(
-                new CriticalRateChangedNotification($previousCurrencyRate, $newCurrencyRate)
+                new CriticalRateChangedNotification($previousExchangeRate, $newExchangeRate)
             )
         );
     }
@@ -94,16 +111,16 @@ class CurrencyRateService extends ServiceWithEloquentModel
     /**
      * Get the previous currency rate.
      *
-     * @param CurrencyRate $newCurrencyRate
+     * @param ExchangeRate $newExchangeRate
      *
      * @return ?Model
      */
-    public function getPreviousCurrencyRate(CurrencyRate $newCurrencyRate): ?Model
+    public function getPreviousExchangeRate(ExchangeRate $newExchangeRate): ?Model
     {
         return $this->query()
-            ->where('currency_id', $newCurrencyRate->currency_id)
-            ->where('bank_id', $newCurrencyRate->bank_id)
-            ->whereNot('id', $newCurrencyRate->id)
+            ->where('currency_id', $newExchangeRate->currency_id)
+            ->where('bank_id', $newExchangeRate->bank_id)
+            ->whereNot('id', $newExchangeRate->id)
             ->orderByDesc('date')
             ->first();
     }
@@ -122,6 +139,24 @@ class CurrencyRateService extends ServiceWithEloquentModel
         ];
 
         return Collection::make($result);
+    }
+
+    /**
+     * @param Data $dto
+     *
+     * @return Model
+     * @throws Exception
+     */
+    public function createFromDto(Data $dto): Model
+    {
+        if ($dto instanceof NbuExchangeRate) {
+            return $this->createNbuExchangeRate($dto);
+        }
+        if ($dto instanceof MinFinExchangeRate) {
+            return $this->createMinFinExchangeRate($dto);
+        }
+
+        throw new Exception('Unknown DTO');
     }
 
     /**
@@ -145,23 +180,49 @@ class CurrencyRateService extends ServiceWithEloquentModel
     }
 
     /**
+     * @param NbuExchangeRate $dto
+     *
+     * @return Model
+     */
+    private function createNbuExchangeRate(NbuExchangeRate $dto): Model
+    {
+        $attributes = [
+            ...$dto->except('currency')->toArray(),
+            'currency_id' => $this->currencyService->findByCode($dto->currency)->id,
+            'bank_id' => $this->nbuBank->id,
+        ];
+
+        return $this->firstOrCreate($attributes);
+    }
+
+    /**
+     * @param MinFinExchangeRate $dto
+     *
+     * @return Model
+     */
+    private function createMinFinExchangeRate(MinFinExchangeRate $dto): Model
+    {
+        return $this->firstOrCreate($dto->toArray());
+    }
+
+    /**
      * Check if the rate change is critical.
      *
-     * @param CurrencyRate $previousCurrencyRate
-     * @param CurrencyRate $newCurrencyRate
+     * @param ExchangeRate $previousExchangeRate
+     * @param ExchangeRate $newExchangeRate
      *
      * @return bool
      */
-    private function isRateChangeCritical(CurrencyRate $previousCurrencyRate, CurrencyRate $newCurrencyRate): bool
+    private function isRateChangeCritical(ExchangeRate $previousExchangeRate, ExchangeRate $newExchangeRate): bool
     {
         $askRateChangeInPercents = $this->getRateChangeInPercents(
-            $previousCurrencyRate->ask,
-            $newCurrencyRate->ask
+            $previousExchangeRate->ask,
+            $newExchangeRate->ask
         );
 
         $bidRateChangeInPercents = $this->getRateChangeInPercents(
-            $previousCurrencyRate->bid,
-            $newCurrencyRate->bid
+            $previousExchangeRate->bid,
+            $newExchangeRate->bid
         );
 
         return $askRateChangeInPercents > self::CRITICAL_RATE_CHANGE_IN_PERCENTS ||

@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace App\Traits;
 
-use App\Models\CurrencyRate;
+use App\Models\ExchangeRate;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-trait HasCurrencyRatesRelation
+trait HasExchangeRatesRelation
 {
     /**
      * @param $related
@@ -20,8 +20,8 @@ trait HasCurrencyRatesRelation
     /**
      * @return HasMany
      */
-    public function currencyRates(): HasMany
+    public function exchangeRates(): HasMany
     {
-        return $this->hasMany(CurrencyRate::class);
+        return $this->hasMany(ExchangeRate::class);
     }
 }

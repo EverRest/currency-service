@@ -6,11 +6,13 @@ namespace App\Models;
 use App\Traits\HasBankRelation;
 use App\Traits\HasCurrencyRelation;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
-class CurrencyRate extends Model
+class ExchangeRate extends Model
 {
     use HasFactory;
     use HasBankRelation;
@@ -134,5 +136,15 @@ class CurrencyRate extends Model
             ->selectRaw('currency_id, COALESCE(AVG(ask), ?) as ask', [0.0])
             ->groupBy('currency_id')
             ->get();
+    }
+
+    /**
+     * @return Attribute
+     */
+    public function date(): Attribute
+    {
+        return Attribute::make(
+           set: fn ($dateString) => is_string($dateString) ? Carbon::parse($dateString) : $dateString,
+        );
     }
 }

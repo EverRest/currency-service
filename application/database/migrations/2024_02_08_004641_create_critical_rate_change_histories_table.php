@@ -14,18 +14,18 @@ return new class extends Migration {
     {
         Schema::create('critical_rate_change_histories', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('previous_currency_rate_id');
-            $table->unsignedBigInteger('new_currency_rate_id');
+            $table->unsignedBigInteger('previous_exchange_rate_id');
+            $table->unsignedBigInteger('new_exchange_rate_id');
             $table->timestamps();
 
-            $table->foreign('previous_currency_rate_id')
+            $table->foreign('previous_exchange_rate_id')
                 ->references('id')
-                ->on('currency_rates')
+                ->on('exchange_rates')
                 ->onDelete('cascade');
 
-            $table->foreign('new_currency_rate_id')
+            $table->foreign('new_exchange_rate_id')
                 ->references('id')
-                ->on('currency_rates')
+                ->on('exchange_rates')
                 ->onDelete('cascade');
         });
     }

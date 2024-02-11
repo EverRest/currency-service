@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Traits\HasCurrencyRatesRelation;
+use App\Traits\HasExchangeRatesRelation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Bank extends Model
 {
     use HasFactory;
-    use HasCurrencyRatesRelation;
+    use HasExchangeRatesRelation;
 
     /**
      * @var string[] $fillable
@@ -39,7 +39,7 @@ class Bank extends Model
     /**
      * @var string[] $with
      */
-    protected $with = ['currencyRates', 'currencyRates.currency', 'bankBranches'];
+    protected $with = ['ExchangeRates', 'ExchangeRates.currency', 'bankBranches'];
 
     /**
      * @return HasMany

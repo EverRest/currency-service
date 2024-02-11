@@ -3,23 +3,23 @@ declare(strict_types=1);
 
 namespace App\Events;
 
-use App\Models\CurrencyRate;
+use App\Models\ExchangeRate;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class CurrencyRateChanged
+class ExchangeRateChanged
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
      * Create a new event instance.
      *
-     * @param CurrencyRate $currencyRate
+     * @param ExchangeRate $ExchangeRate
      */
-    public function __construct(public readonly CurrencyRate $currencyRate)
+    public function __construct(public readonly ExchangeRate $ExchangeRate)
     {
     }
 

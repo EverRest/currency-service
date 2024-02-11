@@ -3,12 +3,11 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use App\Events\CurrencyRateChanged;
+use App\Events\ExchangeRateChanged;
 use App\Listeners\CriticalRateChanged;
 use App\Listeners\SubscriptionRateChanged;
-use App\Models\CurrencyRate;
-use App\Notifications\CriticalRateChangedNotification;
-use App\Observers\CurrencyRateObserver;
+use App\Models\ExchangeRate;
+use App\Observers\ExchangeRateObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -24,7 +23,7 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        CurrencyRateChanged::class => [
+        ExchangeRateChanged::class => [
             SubscriptionRateChanged::class,
             CriticalRateChanged::class,
         ],
@@ -35,7 +34,7 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        CurrencyRate::observe(CurrencyRateObserver::class);
+        ExchangeRate::observe(ExchangeRateObserver::class);
     }
 
     /**

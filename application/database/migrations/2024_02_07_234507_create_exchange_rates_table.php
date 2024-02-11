@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('currency_rates', function (Blueprint $table) {
+        Schema::create('exchange_rates', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('bank_id');
             $table->unsignedBigInteger('currency_id');

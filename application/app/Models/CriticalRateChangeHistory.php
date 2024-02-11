@@ -12,24 +12,24 @@ class CriticalRateChangeHistory extends Model
      * @var string[] $fillable
      */
     protected $fillable = [
-        'previous_currency_rate_id',
-        'new_currency_rate_id',
+        'previous_exchange_rate_id',
+        'new_exchange_rate_id',
     ];
 
     /**
      * @return BelongsTo
      */
-    public function previousCurrencyRate(): BelongsTo
+    public function previousExchangeRate(): BelongsTo
     {
-        return $this->belongsTo(CurrencyRate::class, 'previous_currency_rate_id');
+        return $this->belongsTo(ExchangeRate::class, 'previous_exchange_rate_id');
     }
 
     /**
      * @return BelongsTo
      */
-    public function newCurrencyRate(): BelongsTo
+    public function newExchangeRate(): BelongsTo
     {
-        return $this->belongsTo(CurrencyRate::class, 'new_currency_rate_id');
+        return $this->belongsTo(ExchangeRate::class, 'new_exchange_rate_id');
     }
 }
 

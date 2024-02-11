@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace App\Listeners;
 
-use App\Events\CurrencyRateChanged;
-use App\Services\Eloquent\CurrencyRateService;
+use App\Events\ExchangeRateChanged;
+use App\Services\Eloquent\ExchangeRateService;
 use App\Services\Eloquent\UserService;
 use App\Traits\HasIsMailEnabled;
 
@@ -14,28 +14,28 @@ class SubscriptionRateChanged
 
     /**
      * @param UserService $userService
-     * @param CurrencyRateService $currencyRateService
+     * @param ExchangeRateService $ExchangeRateService
      */
     public function __construct(
         private readonly UserService         $userService,
-        private readonly CurrencyRateService $currencyRateService,
+        private readonly ExchangeRateService $ExchangeRateService,
     )
     {
     }
 
     /**
-     * @param CurrencyRateChanged $event
+     * @param ExchangeRateChanged $event
      *
      * @return void
      */
-    public function handle(CurrencyRateChanged $event): void
+    public function handle(ExchangeRateChanged $event): void
     {
         if (!$this->getIsMailEnabled()) {
             return;
         }
-        $newCurrencyRate = $event->currencyRate;
+        $newExchangeRate = $event->ExchangeRate;
         $notifiers = $this->userService->getUsersWithEnabledAlert();
-        $previousCurrencyRate = $this->currencyRateService->getPreviousCurrencyRate($newCurrencyRate);
-        $this->currencyRateService->notifyCriticalRateChange($notifiers, $previousCurrencyRate, $newCurrencyRate);
+        $previousExchangeRate = $this->ExchangeRateService->getPreviousExchangeRate($newExchangeRate);
+        $this->ExchangeRateService->notifyCriticalRateChange($notifiers, $previousExchangeRate, $newExchangeRate);
     }
 }

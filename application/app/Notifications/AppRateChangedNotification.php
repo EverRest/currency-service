@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Notifications;
 
-use App\Models\CurrencyRate;
+use App\Models\ExchangeRate;
 use App\Traits\HasGetRateChangeInPercents;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -30,8 +30,8 @@ class AppRateChangedNotification extends Notification
      * Create a new notification instance.
      */
     public function __construct(
-        protected readonly CurrencyRate $previousRate,
-        protected readonly CurrencyRate $newRate,
+        protected readonly ExchangeRate $previousRate,
+        protected readonly ExchangeRate $newRate,
     )
     {
     }

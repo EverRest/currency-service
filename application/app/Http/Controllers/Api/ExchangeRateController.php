@@ -5,22 +5,22 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\Eloquent\BankService;
-use App\Services\Eloquent\CurrencyRateService;
+use App\Services\Eloquent\ExchangeRateService;
 use App\Services\Eloquent\CurrencyService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Response;
 
-class CurrencyRateController extends Controller
+class ExchangeRateController extends Controller
 {
     /**
-     * @param CurrencyRateService $currencyRateService
+     * @param ExchangeRateService $ExchangeRateService
      * @param CurrencyService $currencyService
      * @param BankService $bankService
      */
     public function __construct(
-        private readonly CurrencyRateService $currencyRateService,
+        private readonly ExchangeRateService $ExchangeRateService,
         private readonly CurrencyService     $currencyService,
         private readonly BankService         $bankService,
     )
@@ -34,7 +34,7 @@ class CurrencyRateController extends Controller
      */
     public function currentRates(Request $request): JsonResponse
     {
-        $response = $this->currencyRateService
+        $response = $this->ExchangeRateService
             ->list($request->all());
 
         return Response::data($response);
@@ -45,7 +45,7 @@ class CurrencyRateController extends Controller
      */
     public function avgRates(): JsonResponse
     {
-        $response = $this->currencyRateService
+        $response = $this->ExchangeRateService
             ->getAvgRates();
 
         return Response::data($response);
@@ -64,7 +64,7 @@ class CurrencyRateController extends Controller
             $this->bankService->list()->pluck('id')->toArray();
         $currencyIds = $request->has('currency_id') ? $request->get('currency_id', []) :
             $this->currencyService->list()->pluck('id')->toArray();
-        $response = $this->currencyRateService
+        $response = $this->ExchangeRateService
             ->getStatisticByPeriod($fromDate, $toDate, $bankIds, $currencyIds);
 
         return Response::data($response);

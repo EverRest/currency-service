@@ -14,12 +14,12 @@ trait HasFindByCode
     abstract public function query(): Builder;
 
     /**
-     * @param string $slug
+     * @param string $code
      *
      * @return Model
      */
-    public function findByCode(string $slug): Model
+    public function findByCode(string $code): Model
     {
-        return $this->query()->where('code', $slug)->firstOrFail();
+        return $this->query()->where('code', $code)->firstOrFail();
     }
 }

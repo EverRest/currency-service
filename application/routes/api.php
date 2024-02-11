@@ -3,7 +3,7 @@
 use App\Http\Controllers\Api\BankBranchController;
 use App\Http\Controllers\Api\BankController;
 use App\Http\Controllers\Api\CurrencyController;
-use App\Http\Controllers\Api\CurrencyRateController;
+use App\Http\Controllers\Api\ExchangeRateController;
 use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\LogoutController;
 use App\Http\Controllers\Api\RegisterController;
@@ -49,9 +49,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/closest', [BankBranchController::class, 'getClosestBanks'])->name('closest-bank-branches');
     });
     Route::group(['prefix' => 'currency-rates', 'name' => 'currency-rates'], function () {
-        Route::get('/', [CurrencyRateController::class, 'currentRates'])->name('current-currency-rates');
-        Route::get('/avg', [CurrencyRateController::class, 'avgRates'])->name('avg-rates');
-        Route::get('/statistic', [CurrencyRateController::class, 'statistic'])->name('statistic');
+        Route::get('/', [ExchangeRateController::class, 'currentRates'])->name('current-currency-rates');
+        Route::get('/avg', [ExchangeRateController::class, 'avgRates'])->name('avg-rates');
+        Route::get('/statistic', [ExchangeRateController::class, 'statistic'])->name('statistic');
     });
     Route::group(['prefix' => 'subscriptions', 'name' => 'subscriptions'], function () {
         Route::get('/', [SubscriptionController::class, 'list'])->name('list');

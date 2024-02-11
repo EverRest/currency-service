@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Services\Http;
 
+use App\DataTransferObjects\FinanceUaBankBranch;
+use App\Models\Bank;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
@@ -16,16 +18,11 @@ class FinanceUaService
      */
     public function getBankList(): Collection
     {
-        $list = Collection::make();
         $response = Http::get(self::FINANCE_UI_URL . 'banks/api/organizationsList', [
             'locale' => 'uk',
         ]);
-        $json = $response->json();
-        if (Arr::has($json, 'responseData')) {
-            $list = Collection::make(Arr::get($json, 'responseData', []));
-        }
 
-        return $list;
+        return Collection::make(Arr::get($response->json(), 'responseData', []));
     }
 
     /**
@@ -36,17 +33,12 @@ class FinanceUaService
      */
     public function getBankBranchList(string $bankSlug, string $locale = 'uk'): Collection
     {
-        $list = Collection::make();
         $response = Http::get(self::FINANCE_UI_URL . 'api/organization/v1/branches', [
             'slug' => $bankSlug,
             'locale' => $locale,
         ]);
-        $json = $response->json();
-        if (Arr::has($json, 'data')) {
-            $list = Collection::make(Arr::get($json, 'data', []));
-        }
 
-        return $list;
+        return Collection::make(Arr::get($response->json(), 'data', []));
     }
 
     /**
@@ -68,5 +60,26 @@ class FinanceUaService
         }
 
         return $list;
+    }
+
+    /**
+     * @param Bank $bank
+     *
+     * @return array
+     */
+    public function getBankBranchesDtoArray(Bank $bank): array
+    {
+        $bankBranches = [];
+        foreach ($this->getBankBranchList($bank->code) as $branch) {
+            $localBranches = Arr::get($branch, 'data');
+            $dtoData = array_map(function ($b) use ($bank, $branch) {
+                Arr::set($b, 'bank_id', $bank->id);
+                Arr::set($b, 'external_id', Arr::get($branch, 'id'));
+                return $b;
+            }, $localBranches);
+            $bankBranches = array_merge($bankBranches, $dtoData);
+        }
+
+        return FinanceUaBankBranch::collect($bankBranches);
     }
 }

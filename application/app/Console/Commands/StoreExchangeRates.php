@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Jobs\StoreCurrentRatesJob;
+use App\Jobs\StoreExchangeRatesJob;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 
-class StoreCurrentRates extends Command
+class StoreExchangeRates extends Command
 {
     private const SUCCESS_MESSAGE = 'Currency rates stored successfully';
 
@@ -16,21 +16,21 @@ class StoreCurrentRates extends Command
      *
      * @var string
      */
-    protected $signature = 'app:store-currency-rates';
+    protected $signature = 'app:store-exchange-rates';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Store CurrencyRates';
+    protected $description = 'Store ExchangeRates';
 
     /**
      * Execute the console command.
      */
     public function handle(): int
     {
-        StoreCurrentRatesJob::dispatch();
+        StoreExchangeRatesJob::dispatch();
         $this->info(get_class($this) . ' : ' . Carbon::now()->toDateTimeString() . ' - ' . self::SUCCESS_MESSAGE);
 
         return 1;

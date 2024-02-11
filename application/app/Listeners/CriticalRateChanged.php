@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace App\Listeners;
 
-use App\Events\CurrencyRateChanged;
+use App\Events\ExchangeRateChanged;
 use App\Services\Eloquent\CriticalRateChangeHistoryService;
-use App\Services\Eloquent\CurrencyRateService;
+use App\Services\Eloquent\ExchangeRateService;
 use App\Services\Eloquent\UserService;
 use App\Traits\HasIsMailEnabled;
 
@@ -14,12 +14,12 @@ class CriticalRateChanged
     use HasIsMailEnabled;
 
     /**
-     * @param CurrencyRateService $currencyRateService
+     * @param ExchangeRateService $ExchangeRateService
      * @param UserService $userService
      * @param CriticalRateChangeHistoryService $criticalRateChangeHistoryService
      */
     public function __construct(
-        private readonly CurrencyRateService              $currencyRateService,
+        private readonly ExchangeRateService              $ExchangeRateService,
         private readonly UserService                      $userService,
         private readonly CriticalRateChangeHistoryService $criticalRateChangeHistoryService,
     )
@@ -27,23 +27,23 @@ class CriticalRateChanged
     }
 
     /**
-     * @param CurrencyRateChanged $event
+     * @param ExchangeRateChanged $event
      *
      * @return void
      */
-    public function handle(CurrencyRateChanged $event): void
+    public function handle(ExchangeRateChanged $event): void
     {
         if (!$this->getIsMailEnabled()) {
             return;
         }
-        $newCurrencyRate = $event->currencyRate;
-        if ($this->currencyRateService->checkForCriticalChange($newCurrencyRate)) {
+        $newExchangeRate = $event->ExchangeRate;
+        if ($this->ExchangeRateService->checkForCriticalChange($newExchangeRate)) {
             $notifiers = $this->userService->getUsersWithEnabledAlert();
-            $previousCurrencyRate = $this->currencyRateService->getPreviousCurrencyRate($newCurrencyRate);
-            $this->currencyRateService->notifyCriticalRateChange($notifiers, $previousCurrencyRate, $newCurrencyRate);
+            $previousExchangeRate = $this->ExchangeRateService->getPreviousExchangeRate($newExchangeRate);
+            $this->ExchangeRateService->notifyCriticalRateChange($notifiers, $previousExchangeRate, $newExchangeRate);
             $this->criticalRateChangeHistoryService->firstOrCreate([
-                'previous_currency_rate_id' => $previousCurrencyRate->id,
-                'new_currency_rate_id' => $newCurrencyRate->id,
+                'previous_currency_rate_id' => $previousExchangeRate->id,
+                'new_currency_rate_id' => $newExchangeRate->id,
             ]);
         }
     }

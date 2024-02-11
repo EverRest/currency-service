@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Console;
 
-use App\Console\Commands\StoreCurrentRates;
+use App\Console\Commands\StoreExchangeRates;
 use App\Console\Commands\UpdateBankBranches;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -16,9 +16,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command(UpdateBankBranches::class)
-            ->dailyAt('00:01')->weekdays();
-        $schedule->command(StoreCurrentRates::class)
-            ->hourly()->between('9:00', '18:00')->weekdays();
+            ->dailyAt('00:01')->weekly();
+        $schedule->command(StoreExchangeRates::class)
+            ->hourly()->between('9:00', '18:00')->everyTenMinutes();
     }
 
     /**
