@@ -131,13 +131,13 @@ class ExchangeRateService extends ServiceWithEloquentModel
      * @return Model
      * @throws Exception
      */
-    public function createFromDto(Data $dto): Model
+    public function storeFromDto(Data $dto): Model
     {
         if ($dto instanceof NbuExchangeRate) {
-            return $this->createNbuExchangeRate($dto);
+            return $this->storeNbuExchangeRate($dto);
         }
         if ($dto instanceof MinFinExchangeRate) {
-            return $this->createMinFinExchangeRate($dto);
+            return $this->storeMinFinExchangeRate($dto);
         }
 
         throw new Exception('Unknown DTO');
@@ -168,7 +168,7 @@ class ExchangeRateService extends ServiceWithEloquentModel
      *
      * @return Model
      */
-    private function createNbuExchangeRate(NbuExchangeRate $dto): Model
+    private function storeNbuExchangeRate(NbuExchangeRate $dto): Model
     {
         $attributes = [
             ...$dto->except('currency')->toArray(),
@@ -186,7 +186,7 @@ class ExchangeRateService extends ServiceWithEloquentModel
      *
      * @return Model
      */
-    private function createMinFinExchangeRate(MinFinExchangeRate $dto): Model
+    private function storeMinFinExchangeRate(MinFinExchangeRate $dto): Model
     {
         return $this->firstOrCreate($dto->toArray());
     }

@@ -35,7 +35,7 @@ class StoreExchangeRatesJob implements ShouldQueue
         $service = App::make(ExchangeRateProviderEnum::getHttpServicePath($this->rateProvider));
         $dtoArray = $service->getExchangeRatesDtoArray();
         foreach ($dtoArray as $dto) {
-            $exchangeRateService->createFromDto($dto);
+            $exchangeRateService->storeFromDto($dto);
         }
 
         return 1;
