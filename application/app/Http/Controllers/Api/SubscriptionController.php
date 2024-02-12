@@ -45,7 +45,10 @@ class SubscriptionController extends Controller
      */
     public function store(Store $request): JsonResponse
     {
-        $attributes = $request->validated();
+        $attributes = [
+            ...$request->validated(),
+            'user_id' => $request->user()->id
+        ];
         $response = $this->subscriptionService
             ->store($attributes);
 
