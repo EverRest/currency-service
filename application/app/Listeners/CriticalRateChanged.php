@@ -8,6 +8,7 @@ use App\Services\App\NotificationService;
 use App\Services\Eloquent\CriticalRateChangeHistoryService;
 use App\Services\Eloquent\ExchangeRateService;
 use App\Services\Eloquent\UserService;
+use App\Services\Helper\CriticalRateChangeChecker;
 use App\Traits\HasIsMailEnabled;
 
 class CriticalRateChanged
@@ -19,12 +20,14 @@ class CriticalRateChanged
      * @param UserService $userService
      * @param CriticalRateChangeHistoryService $criticalRateChangeHistoryService
      * @param NotificationService $notificationService
+     * @param CriticalRateChangeChecker $criticalRateChangeChecker
      */
     public function __construct(
         private readonly ExchangeRateService              $exchangeRateService,
         private readonly UserService                      $userService,
         private readonly CriticalRateChangeHistoryService $criticalRateChangeHistoryService,
         private readonly NotificationService              $notificationService,
+        private readonly CriticalRateChangeChecker        $criticalRateChangeChecker,
     )
     {
     }
@@ -40,9 +43,9 @@ class CriticalRateChanged
             return;
         }
         $newExchangeRate = $event->exchangeRate;
-        if ($this->exchangeRateService->checkForCriticalChange($newExchangeRate)) {
+        $previousExchangeRate = $this->exchangeRateService->getPreviousExchangeRate($newExchangeRate);
+        if ($this->criticalRateChangeChecker->check($newExchangeRate, $previousExchangeRate)) {
             $notifiers = $this->userService->getUsersWithEnabledAlert();
-            $previousExchangeRate = $this->exchangeRateService->getPreviousExchangeRate($newExchangeRate);
             $this->notificationService->notifyCriticalRateChange($notifiers, $previousExchangeRate, $newExchangeRate);
             $this->criticalRateChangeHistoryService->firstOrCreate([
                 'previous_currency_rate_id' => $previousExchangeRate->id,

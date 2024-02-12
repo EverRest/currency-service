@@ -7,9 +7,7 @@ use App\DataTransferObjects\MinFinExchangeRate;
 use App\DataTransferObjects\NbuExchangeRate;
 use App\Models\Bank;
 use App\Models\ExchangeRate;
-use App\Notifications\CriticalRateChangedNotification;
 use App\Services\Super\ServiceWithEloquentModel;
-use App\Traits\HasGetRateChangeInPercents;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -19,19 +17,10 @@ use Spatie\LaravelData\Data;
 
 class ExchangeRateService extends ServiceWithEloquentModel
 {
-    use HasGetRateChangeInPercents;
-
-    private const CRITICAL_RATE_CHANGE_IN_PERCENTS = 5.0;
-
     /**
      * @var string $model
      */
     protected string $model = ExchangeRate::class;
-
-    /**
-     * @var Collection $currencies
-     */
-    private Collection $currencies;
 
     /**
      * @var Bank $nbuBank
@@ -73,33 +62,13 @@ class ExchangeRateService extends ServiceWithEloquentModel
     }
 
     /**
-     * Check if the rate change is critical.
-     *
-     * @param ExchangeRate $newExchangeRate
-     *
-     * @return bool
-     */
-    public function checkForCriticalChange(ExchangeRate $newExchangeRate): bool
-    {
-        /**
-         * @var ExchangeRate $previousExchangeRate
-         */
-        $previousExchangeRate = $this->getPreviousExchangeRate($newExchangeRate);
-        if (!$previousExchangeRate) {
-            return false;
-        }
-
-        return $this->isRateChangeCritical($previousExchangeRate, $newExchangeRate);
-    }
-
-    /**
      * Get the previous currency rate.
      *
      * @param ExchangeRate $newExchangeRate
      *
-     * @return ?Model
+     * @return Model|ExchangeRate|null
      */
-    public function getPreviousExchangeRate(ExchangeRate $newExchangeRate): ?Model
+    public function getPreviousExchangeRate(ExchangeRate $newExchangeRate): null|Model|ExchangeRate
     {
         return $this->query()
             ->where('currency_id', $newExchangeRate->currency_id)
@@ -114,7 +83,7 @@ class ExchangeRateService extends ServiceWithEloquentModel
      */
     public function getAvgRates(): Collection
     {
-        $avgRates = $this->query()->averageRate();
+        $avgRates = $this->query()->averageRate()->get();
         $nbuRates = $this->query()->nbuRateForCurrencies($this->bankService->query()->get()->pluck('id')->toArray());
 
         $result = [
@@ -189,30 +158,6 @@ class ExchangeRateService extends ServiceWithEloquentModel
     private function storeMinFinExchangeRate(MinFinExchangeRate $dto): Model
     {
         return $this->firstOrCreate($dto->toArray());
-    }
-
-    /**
-     * Check if the rate change is critical.
-     *
-     * @param ExchangeRate $previousExchangeRate
-     * @param ExchangeRate $newExchangeRate
-     *
-     * @return bool
-     */
-    private function isRateChangeCritical(ExchangeRate $previousExchangeRate, ExchangeRate $newExchangeRate): bool
-    {
-        $askRateChangeInPercents = $this->getRateChangeInPercents(
-            $previousExchangeRate->ask,
-            $newExchangeRate->ask
-        );
-
-        $bidRateChangeInPercents = $this->getRateChangeInPercents(
-            $previousExchangeRate->bid,
-            $newExchangeRate->bid
-        );
-
-        return $askRateChangeInPercents > self::CRITICAL_RATE_CHANGE_IN_PERCENTS ||
-            $bidRateChangeInPercents > self::CRITICAL_RATE_CHANGE_IN_PERCENTS;
     }
 
     /**
