@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Listeners;
 
 use App\Events\ExchangeRateChanged;
+use App\Services\App\NotificationService;
 use App\Services\Eloquent\ExchangeRateService;
 use App\Services\Eloquent\UserService;
 use App\Traits\HasIsMailEnabled;
@@ -14,11 +15,13 @@ class SubscriptionRateChanged
 
     /**
      * @param UserService $userService
-     * @param ExchangeRateService $ExchangeRateService
+     * @param ExchangeRateService $exchangeRateService
+     * @param NotificationService $notificationService
      */
     public function __construct(
         private readonly UserService         $userService,
-        private readonly ExchangeRateService $ExchangeRateService,
+        private readonly ExchangeRateService $exchangeRateService,
+        private readonly NotificationService $notificationService,
     )
     {
     }
@@ -33,9 +36,9 @@ class SubscriptionRateChanged
         if (!$this->getIsMailEnabled()) {
             return;
         }
-        $newExchangeRate = $event->ExchangeRate;
+        $newExchangeRate = $event->exchangeRate;
         $notifiers = $this->userService->getUsersWithEnabledAlert();
-        $previousExchangeRate = $this->ExchangeRateService->getPreviousExchangeRate($newExchangeRate);
-        $this->ExchangeRateService->notifyCriticalRateChange($notifiers, $previousExchangeRate, $newExchangeRate);
+        $previousExchangeRate = $this->exchangeRateService->getPreviousExchangeRate($newExchangeRate);
+        $this->notificationService->notifySubscriberRateChange($notifiers, $previousExchangeRate, $newExchangeRate);
     }
 }

@@ -93,22 +93,6 @@ class ExchangeRateService extends ServiceWithEloquentModel
     }
 
     /**
-     * @param Collection $notifiers
-     * @param $previousExchangeRate
-     * @param $newExchangeRate
-     *
-     * @return void
-     */
-    public function notifyCriticalRateChange(Collection $notifiers, $previousExchangeRate, $newExchangeRate): void
-    {
-        $notifiers->each(
-            fn($notifier) => $notifier->notify(
-                new CriticalRateChangedNotification($previousExchangeRate, $newExchangeRate)
-            )
-        );
-    }
-
-    /**
      * Get the previous currency rate.
      *
      * @param ExchangeRate $newExchangeRate

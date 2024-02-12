@@ -19,7 +19,7 @@ class ExchangeRateChanged
      *
      * @param ExchangeRate $ExchangeRate
      */
-    public function __construct(public readonly ExchangeRate $ExchangeRate)
+    public function __construct(public readonly ExchangeRate $exchangeRate)
     {
     }
 
