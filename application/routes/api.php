@@ -26,9 +26,8 @@ Route::name('auth.')->group(function () {
     Route::post('/register', RegisterController::class)->name('register');
     Route::post('/login', LoginController::class)->name('login');
     Route::middleware('auth:sanctum')->post('/logout', LogoutController::class)->name('logout');
-    Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-        return $request->user();
-    })->name('user');
+    Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'getCurrentUser'])
+        ->name('users.current');
 });
 
 Route::middleware('auth:sanctum')->group(function () {

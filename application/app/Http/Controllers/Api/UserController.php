@@ -8,6 +8,7 @@ use App\Http\Requests\User\Update;
 use App\Models\User;
 use App\Services\Eloquent\UserService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 
 class UserController extends Controller
@@ -20,6 +21,14 @@ class UserController extends Controller
     )
     {}
 
+    public function getCurrentUser(Request $request)
+    {
+        $userId = $request->user()->id;
+        $user = $this->userService->findOrFail($userId);
+
+        return Response::data($user);
+    }
+
     /**
      * @param User $user
      * @param Update $request
@@ -31,9 +40,7 @@ class UserController extends Controller
         $user = $this->userService
             ->update($user, $request->validated());
 
-        return Response::data([
-            'data' => $user
-        ]);
+        return Response::data($user);
     }
 
     /**
@@ -46,8 +53,6 @@ class UserController extends Controller
         $user = $this->userService
             ->toggleCriticalRateChangeSubscription($user);
 
-        return Response::data([
-            'data' => $user
-        ]);
+        return Response::data($user);
     }
 }
