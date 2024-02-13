@@ -21,6 +21,11 @@ class UserController extends Controller
     )
     {}
 
+    /**
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
     public function getCurrentUser(Request $request)
     {
         $userId = $request->user()->id;
