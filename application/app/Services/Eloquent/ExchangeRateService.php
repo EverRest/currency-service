@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
 
@@ -36,28 +37,45 @@ class ExchangeRateService extends ServiceWithEloquentModel
         private readonly CurrencyService $currencyService,
     )
     {
-        $this->currencies = $this->currencyService->list();
         $this->nbuBank = $this->bankService->getNbuBank();
     }
 
     /**
-     * @param mixed $fromDate
-     * @param mixed $toDate
-     * @param array $bankIds
-     * @param array $currencyIds
+     * @param string|null $from
+     * @param string|null $to
+     * @param array|null $bankIds
+     * @param array|null $currencyIds
      *
      * @return Collection
      */
-    public function getStatisticByPeriod(mixed $fromDate, mixed $toDate, array $bankIds, array $currencyIds): Collection
+    public function getStatisticByPeriod(
+        ?string $from,
+        ?string $to,
+        ?array  $bankIds,
+        ?array  $currencyIds
+    ): Collection
     {
+        $fromDate = $from ? Carbon::make($from) : Carbon::now()->subMonth();
+        $toDate = $to ? Carbon::make($to) : Carbon::now();
+        $bankIdArray = $bankIds ?? $this->bankService
+            ->list()
+            ->pluck('id')
+            ->toArray();
+        $currencyIdArray = $currencyIds ?? $this->currencyService
+            ->list()
+            ->pluck('id')
+            ->toArray();
+
         return $this->query()
             ->whereBetween('date', [$fromDate, $toDate])
-            ->when($bankIds, function ($query) use ($bankIds) {
-                return $query->whereIn('bank_id', $bankIds);
-            })
-            ->when($currencyIds, function ($query) use ($currencyIds) {
-                return $query->whereIn('currency_id', $currencyIds);
-            })
+            ->when(
+                $bankIdArray,
+                fn ($query) => $query->whereIn('bank_id', $bankIdArray)
+            )
+            ->when(
+                $currencyIdArray,
+                fn ($query) => $query->whereIn('currency_id', $currencyIdArray)
+            )
             ->get();
     }
 

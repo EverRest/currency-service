@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BankBranch\ClosestBank;
+use App\Http\Requests\ExchangeRate\Index;
 use App\Services\Eloquent\BankBranchService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,7 +25,7 @@ class BankBranchController extends Controller
      *
      * @return JsonResponse
      */
-    public function list(Request $request): JsonResponse
+    public function list(Index $request): JsonResponse
     {
         $attributes = $request->all();
         $response = $this->bankBranchService

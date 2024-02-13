@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Currency\Index;
 use App\Services\Eloquent\CurrencyService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,7 +24,7 @@ class CurrencyController extends Controller
      *
      * @return JsonResponse
      */
-    public function list(Request $request): JsonResponse
+    public function list(Index $request): JsonResponse
     {
         $attributes = $request->all();
         $response = $this->currencyService

@@ -9,8 +9,6 @@ use App\Services\Helper\CriticalRateChangeChecker;
 
 class AppServiceProvider extends ServiceProvider
 {
-    private const DATA_KEY = 'data';
-
     /**
      * @return void
      */
@@ -29,11 +27,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Response::macro(
-            self::DATA_KEY,
+            'data',
             function ($data, $status = 200, $headers = [], $options = 0) {
                 return response()
                     ->json(
-                        [self::DATA_KEY => $data],
+                        ['data' => $data],
                         $status,
                         $headers,
                         $options

@@ -9,7 +9,6 @@ use App\Http\Requests\Subscription\Update;
 use App\Models\Subscription;
 use App\Services\Eloquent\SubscriptionService;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Response;
 use Throwable;
@@ -23,16 +22,11 @@ class SubscriptionController extends Controller
     {
     }
 
-    /**
-     * @param Request $request
-     *
-     * @return JsonResponse
-     */
-    public function list(Request $request): JsonResponse
+    public function list(): JsonResponse
     {
 
         $response = $this->subscriptionService
-            ->list($request->all());
+            ->list();
 
         return Response::data($response);
     }

@@ -45,7 +45,13 @@ class ServiceWithEloquentModel
         );
         $this->sort(
             $query,
-            Arr::only($data, [Config::get("pagination.sort_key"), Config::get("pagination.order_key")]),
+            Arr::only(
+                $data,
+                [
+                    Config::get('pagination.sort_key'),
+                    Config::get('pagination.order_key')
+                ]
+            ),
         );
         return $query->lockForUpdate()->get();
     }
